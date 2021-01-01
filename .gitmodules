@@ -1,0 +1,6 @@
+[submodule "externals/switch-cmake"]
+	path = externals/switch-cmake
+	url = https://github.com/vbe0201/switch-cmake
+[submodule "externals/Catch2"]
+	path = externals/Catch2
+	url = https://github.com/catchorg/Catch2
