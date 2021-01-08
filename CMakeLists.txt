@@ -10,33 +10,33 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 find_package(deko3d REQUIRED)
 
 add_executable(nxgpucatch
-	src/tests/clear.cpp
-	src/tests/render_formats.cpp
-	src/bit_cast.h
-	src/cmd_util.h
-	src/compare.h
-	src/device.cpp
-	src/device.h
-	src/formats.h
-	src/main.cpp
-	src/resource.cpp
-	src/resource.h
-	src/wait_input.cpp
-	src/wait_input.h
+    src/tests/clear.cpp
+    src/tests/render_formats.cpp
+    src/bit_cast.h
+    src/cmd_util.h
+    src/compare.h
+    src/device.cpp
+    src/device.h
+    src/formats.h
+    src/main.cpp
+    src/resource.cpp
+    src/resource.h
+    src/wait_input.cpp
+    src/wait_input.h
 )
 
 target_link_libraries(nxgpucatch switch::deko3d switch::libnx Catch2::Catch2)
 target_compile_options(nxgpucatch PRIVATE
-	-std=c++20
-	-Wall
-	-Wextra
-	-Werror
-	-Werror=shadow
-	-pedantic
+    -std=c++20
+    -Wall
+    -Wextra
+    -Werror
+    -Werror=shadow
+    -pedantic
 )
 
 set_target_properties(nxgpucatch PROPERTIES
-	APP_TITLE "nxgpucatch"
+    APP_TITLE "nxgpucatch"
     APP_AUTHOR "yuzu Team"
     APP_VERSION "0.1.0"
 )
@@ -45,3 +45,9 @@ set_target_properties(nxgpucatch PROPERTIES
 set(NO_ICON TRUE)
 set(NO_NACP TRUE)
 add_nro_target(nxgpucatch)
+
+find_program(nxlink_exe nxlink PATHS ${DEVKITPRO}/tools/bin REQUIRED)
+add_custom_target(nxlink
+    COMMAND ${nxlink_exe} $<TARGET_FILE:nxgpucatch>.nro
+    DEPENDS nxgpucatch
+)
