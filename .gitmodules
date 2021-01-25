@@ -4,3 +4,6 @@
 [submodule "externals/Catch2"]
 	path = externals/Catch2
 	url = https://github.com/catchorg/Catch2
+[submodule "externals/nxas"]
+	path = externals/nxas
+	url = https://github.com/ReinUsesLisp/nxas
