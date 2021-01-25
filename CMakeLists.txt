@@ -19,6 +19,7 @@ add_executable(nxgpucatch
     src/device.cpp
     src/device.h
     src/formats.h
+    src/heap.h
     src/main.cpp
     src/resource.cpp
     src/resource.h
