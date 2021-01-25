@@ -12,6 +12,7 @@ find_package(deko3d REQUIRED)
 add_executable(nxgpucatch
     src/tests/clear.cpp
     src/tests/render_formats.cpp
+    src/alignment.h
     src/bit_cast.h
     src/cmd_util.h
     src/compare.h
