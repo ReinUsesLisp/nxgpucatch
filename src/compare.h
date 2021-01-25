@@ -7,7 +7,7 @@
 template <typename T>
 requires(std::is_scalar_v<T> || std::is_same_v<T, __fp16>) bool ThresholdCompare(T lhs, T rhs,
                                                                                  T max_diff = {}) {
-    T diff;
+    T diff{};
     if constexpr (std::is_integral_v<T>) {
         if (__builtin_sub_overflow(lhs, rhs, &diff) && __builtin_sub_overflow(rhs, lhs, &diff)) {
             return false;
@@ -19,7 +19,11 @@ requires(std::is_scalar_v<T> || std::is_same_v<T, __fp16>) bool ThresholdCompare
         if (max_diff == T{}) {
             return std::memcmp(&lhs, &rhs, sizeof(T)) == 0;
         }
-        diff = std::abs(lhs - rhs);
+        if (lhs > rhs) {
+            diff = lhs - rhs;
+        } else {
+            diff = rhs - lhs;
+        }
     }
     return diff <= max_diff;
 }

@@ -39,6 +39,19 @@ target_compile_options(nxgpucatch PRIVATE
     -Werror=shadow
     -pedantic
 )
+target_precompile_headers(nxgpucatch PRIVATE
+    <catch2/catch_test_macros.hpp>
+    <deko3d.hpp>
+    <array>
+    <algorithm>
+    <type_traits>
+    <cstdint>
+    <cstddef>
+    <cstring>
+    <optional>
+    <vector>
+    <stdexcept>
+)
 
 set_target_properties(nxgpucatch PROPERTIES
     APP_TITLE "nxgpucatch"
