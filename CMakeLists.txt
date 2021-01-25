@@ -23,11 +23,13 @@ add_executable(nxgpucatch
     src/main.cpp
     src/resource.cpp
     src/resource.h
+    src/shader.cpp
+    src/shader.h
     src/wait_input.cpp
     src/wait_input.h
 )
 
-target_link_libraries(nxgpucatch switch::deko3d switch::libnx Catch2::Catch2)
+target_link_libraries(nxgpucatch switch::deko3d switch::libnx Catch2::Catch2 nxas_lib)
 target_compile_options(nxgpucatch PRIVATE
     -std=c++20
     -Wall
