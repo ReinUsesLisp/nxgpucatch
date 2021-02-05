@@ -14,7 +14,7 @@ Shader::Shader(const char* code) {
     const std::vector<uint64_t> dksh{nxas::assemble(code)};
     const size_t size{dksh.size() * sizeof(uint64_t)};
 
-    heap = dk::MemBlockMaker{device, AlignUp<uint32_t>(size, DK_MEMBLOCK_ALIGNMENT)}
+    heap = dk::MemBlockMaker{device, AlignUp<uint32_t>(size + 0x4000, DK_MEMBLOCK_ALIGNMENT)}
                .setFlags(DkMemBlockFlags_CpuUncached | DkMemBlockFlags_GpuCached |
                          DkMemBlockFlags_Code | DkMemBlockFlags_ZeroFillInit)
                .create();
