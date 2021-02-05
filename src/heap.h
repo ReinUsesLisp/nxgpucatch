@@ -44,12 +44,12 @@ public:
     explicit TypedHeap()
         : Heap{sizeof(T), DkMemBlockFlags_CpuUncached | DkMemBlockFlags_GpuCached} {}
 
-    T& operator*() noexcept {
+    volatile T& operator*() noexcept {
         return *static_cast<T*>(CpuAddr());
     }
 
     template <typename Index>
     auto& operator[](const Index& index) {
-        return (*static_cast<T*>(CpuAddr()))[index];
+        return (*static_cast<volatile T*>(CpuAddr()))[index];
     }
 };
