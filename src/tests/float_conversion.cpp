@@ -27,24 +27,13 @@ enum class InputMode {
 } // Anonymous namespace
 
 template <typename Result, typename Input>
-static std::string Text(const char* operation, Input value, InputMode mode) {
+static std::string Text(const char* operation, InputMode mode) {
     std::string text = ".dksh compute\n"
-    "main:\n"
-    "MOV R0, c[0x0][0x140];\n"
-    "MOV R1, c[0x0][0x144];\n";
-    if constexpr (sizeof(Input) == 2) {
-        const uint16_t raw{BitCast<uint16_t>(value)};
-        const uint32_t pair{BitCast<uint32_t>(std::array{raw, raw})};
-        text += "MOV32I R2, " + std::to_string(pair) + ";\n" ;
-    }
-    if constexpr (sizeof(Input) == 4) {
-        text += "MOV32I R2, " + std::to_string(BitCast<uint32_t>(value)) + ";\n" ;
-    }
-    if constexpr (sizeof(Input) == 8) {
-        const auto pair{BitCast<std::array<uint32_t, 2>>(value)};
-        text += "MOV32I R2, " + std::to_string(pair[0]) + ";\n" ;
-        text += "MOV32I R3, " + std::to_string(pair[1]) + ";\n" ;
-    }
+                       "main:\n"
+                       "MOV R0, c[0x0][0x140];\n"
+                       "MOV R1, c[0x0][0x144];\n"
+                       "MOV R2, c[0x2][0x0];\n"
+                       "MOV R3, c[0x2][0x4];\n";
     text += operation;
     text += " R2, ";
     switch (mode) {
@@ -67,10 +56,14 @@ static std::string Text(const char* operation, Input value, InputMode mode) {
 
 template <typename Result, typename Input>
 static Result Eval(const char* operation, Input value) {
+    TypedHeap<Input> input_heap;
+    *input_heap = value;
+
     // Register mode setup
     TypedHeap<Result> reg_heap;
-    Shader reg_shader(Text<Result, Input>(operation, value, InputMode::Reg).c_str());
+    Shader reg_shader(Text<Result, Input>(operation, InputMode::Reg).c_str());
     RecordRunWait([&](dk::CmdBuf cmdbuf) {
+        input_heap.BindUniform(cmdbuf, DkStage_Compute, 0);
         reg_heap.BindStorage(cmdbuf, DkStage_Compute);
         reg_shader.Bind(cmdbuf, DkStageFlag_Compute);
         cmdbuf.dispatchCompute(1, 1, 1);
@@ -78,12 +71,8 @@ static Result Eval(const char* operation, Input value) {
 
     // Constant buffer setup
     TypedHeap<Result> cbuf_heap;
-    TypedHeap<Input> input_heap;
-    *input_heap = value;
-
-    Shader cbuf_shader(Text<Result, Input>(operation, value, InputMode::Cbuf).c_str());
+    Shader cbuf_shader(Text<Result, Input>(operation, InputMode::Cbuf).c_str());
     RecordRunWait([&](dk::CmdBuf cmdbuf) {
-        input_heap.BindUniform(cmdbuf, DkStage_Compute, 0);
         cbuf_heap.BindStorage(cmdbuf, DkStage_Compute);
         cbuf_shader.Bind(cmdbuf, DkStageFlag_Compute);
         cmdbuf.dispatchCompute(1, 1, 1);
@@ -184,3 +173,25 @@ TEST_CASE("F2I FTZ") {
     REQUIRE(Eval<s32, f32>("F2I.S32.F32.FLOOR", -denorm) == -1);
 }
 
+TEST_CASE("F2I NAN") {
+    static constexpr f32 f32_qnan{std::numeric_limits<f32>::quiet_NaN()};
+    static constexpr f64 f64_qnan{std::numeric_limits<f64>::quiet_NaN()};
+
+    // If src_format == U64 || src_format == U64, NAN gets converted into a special value
+    // otherwise it returns zero
+    REQUIRE(Eval<u64, f32>("F2I.FTZ.U64.F32", f32_qnan) == 0x8000'0000'0000'0000);
+    REQUIRE(Eval<u64, f32>("F2I.FTZ.S64.F32", f32_qnan) == 0x8000'0000'0000'0000);
+    REQUIRE(Eval<u32, f32>("F2I.FTZ.U32.F32", f32_qnan) == 0);
+    REQUIRE(Eval<u32, f32>("F2I.FTZ.S32.F32", f32_qnan) == 0);
+    REQUIRE(Eval<u32, f32>("F2I.FTZ.U16.F32", f32_qnan) == 0);
+    REQUIRE(Eval<u32, f32>("F2I.FTZ.S16.F32", f32_qnan) == 0);
+
+    // If dest_format is F64, it also returns the special value
+    // but only when the result is U32 and S32
+    REQUIRE(Eval<u32, f64>("F2I.FTZ.U32.F64", f64_qnan) == 0x8000'0000);
+    REQUIRE(Eval<u32, f64>("F2I.FTZ.S32.F64", f64_qnan) == 0x8000'0000);
+    REQUIRE(Eval<u32, f64>("F2I.FTZ.U64.F64", f64_qnan) == 0);
+    REQUIRE(Eval<u32, f64>("F2I.FTZ.S64.F64", f64_qnan) == 0);
+    REQUIRE(Eval<u32, f64>("F2I.FTZ.U16.F64", f64_qnan) == 0);
+    REQUIRE(Eval<u32, f64>("F2I.FTZ.S16.F64", f64_qnan) == 0);
+}
