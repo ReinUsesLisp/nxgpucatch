@@ -10,16 +10,13 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 find_package(deko3d REQUIRED)
 
 add_executable(nxgpucatch
-    src/tests/clear.cpp
-    src/tests/float_arithmetic.cpp
-    src/tests/float_conversion.cpp
-    src/tests/render_formats.cpp
     src/alignment.h
     src/bit_cast.h
     src/cmd_util.h
     src/compare.h
     src/device.cpp
     src/device.h
+    src/eval_util.h
     src/formats.h
     src/heap.h
     src/main.cpp
@@ -27,6 +24,11 @@ add_executable(nxgpucatch
     src/resource.h
     src/shader.cpp
     src/shader.h
+    src/tests/clear.cpp
+    src/tests/f2i.cpp
+    src/tests/fadd.cpp
+    src/tests/p2r.cpp
+    src/tests/render_formats.cpp
     src/wait_input.cpp
     src/wait_input.h
 )

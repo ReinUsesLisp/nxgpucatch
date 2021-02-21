@@ -125,8 +125,8 @@ std::string TextBinary(const char* operation, Input input = Input{}, bool neg_a 
     return text;
 }
 
-template <typename Result, typename InputData>
-[[nodiscard]] Result Run(std::string code, InputData data) {
+template <typename Result = u32, typename InputData = u32>
+[[nodiscard]] Result Run(std::string code, InputData data = InputData{}) {
     TypedHeap<InputData> input_heap;
     TypedHeap<Result> output_heap;
     *input_heap = data;

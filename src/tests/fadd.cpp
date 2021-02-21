@@ -4,7 +4,7 @@
 
 using namespace EvalUtil;
 
-TEST_CASE("FADD Simple", "[float_arithmetic]") {
+TEST_CASE("FADD Simple", "[shader]") {
     REQUIRE(EvalBinaryImm<f32>("FADD.FTZ", 5.0f, 3.0f) == 8.0f);
     REQUIRE(EvalBinaryImm<f32>("FADD.FTZ", 1.0f, 3.0f) == 4.0f);
     REQUIRE(EvalBinaryImm<f32>("FADD.FTZ", -1.0f, 4.0f) == 3.0f);
@@ -18,13 +18,13 @@ TEST_CASE("FADD Simple", "[float_arithmetic]") {
     REQUIRE(EvalBinaryImm<f32>("FADD.FTZ", 1.0f, -2.0f, false, false, true, true) == -1.0f);
 }
 
-TEST_CASE("FADD Saturate", "[float_arithmetic]") {
+TEST_CASE("FADD Saturate", "[shader]") {
     REQUIRE(EvalBinaryImm<f32>("FADD.FTZ.SAT", 4.0f, 2.0f) == 1.0f);
     REQUIRE(EvalBinaryImm<f32>("FADD.FTZ.SAT", -4.0f, 2.0f) == 0.0f);
     REQUIRE(EvalBinaryImm<f32>("FADD.FTZ.SAT", 0.5f, 0.25f) == 0.75f);
 }
 
-TEST_CASE("FADD NAN", "[float_arithmetic]") {
+TEST_CASE("FADD NAN", "[shader]") {
     static constexpr f32 qnan{std::numeric_limits<f32>::quiet_NaN()};
     REQUIRE(std::isnan(EvalBinaryImm<f32>("FADD.FTZ", qnan, 0.0f)));
     REQUIRE(std::isnan(EvalBinaryImm<f32>("FADD.FTZ", 0.0f, qnan)));
@@ -33,7 +33,7 @@ TEST_CASE("FADD NAN", "[float_arithmetic]") {
     REQUIRE(EvalBinaryImm<f32>("FADD.FTZ.SAT", 0.0f, qnan) == 0.0f);
 }
 
-TEST_CASE("FADD Infinity", "[float_arithmetic]") {
+TEST_CASE("FADD INF", "[shader]") {
     static constexpr f32 inf{std::numeric_limits<f32>::infinity()};
     REQUIRE(EvalBinaryImm<f32>("FADD.FTZ", inf, 0.0f) == inf);
     REQUIRE(EvalBinaryImm<f32>("FADD.FTZ", 0.0f, inf) == inf);
@@ -41,7 +41,7 @@ TEST_CASE("FADD Infinity", "[float_arithmetic]") {
     REQUIRE(std::isnan(EvalBinaryImm<f32>("FADD.FTZ", -inf, inf)));
 }
 
-TEST_CASE("FADD Rounding", "[float_arithmetic]") {
+TEST_CASE("FADD Rounding", "[shader]") {
     REQUIRE(EvalBinary<f32>("FADD.FTZ.RN", 0.001f, 0.002f) <= 0.003f);
     REQUIRE(EvalBinary<f32>("FADD.FTZ.RZ", 0.001f, 0.002f) <= 0.003f);
     REQUIRE(EvalBinary<f32>("FADD.FTZ.RM", 0.001f, 0.002f) <= 0.003f);
@@ -53,7 +53,7 @@ TEST_CASE("FADD Rounding", "[float_arithmetic]") {
     REQUIRE(EvalBinary<f32>("FADD.FTZ.RP", -0.001f, -0.002f) >= -0.003f);
 }
 
-TEST_CASE("FADD Denorm", "[float_arithmetic]") {
+TEST_CASE("FADD Denorm", "[shader]") {
     static constexpr f32 denorm{1e-40};
     static constexpr f32 denorm_two{denorm + denorm};
     REQUIRE(EvalBinary<f32>("FADD", denorm, denorm) == denorm_two);

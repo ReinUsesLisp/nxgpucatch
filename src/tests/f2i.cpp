@@ -1,12 +1,10 @@
-#include <array>
-
 #include <catch2/catch_test_macros.hpp>
 
 #include "../eval_util.h"
 
 using namespace EvalUtil;
 
-TEST_CASE("F2I base", "[float_conversion]") {
+TEST_CASE("F2I Simple", "[shader]") {
     REQUIRE(EvalUnary<u32, f16>("F2I.FTZ.U16.F16", 5.0) == 5);
     REQUIRE(EvalUnary<s32, f16>("F2I.FTZ.S16.F16", 7.0) == 7);
     REQUIRE(EvalUnary<u32, f16>("F2I.FTZ.U32.F16", 5.0) == 5);
@@ -29,7 +27,7 @@ TEST_CASE("F2I base", "[float_conversion]") {
     REQUIRE(EvalUnary<s64, f64>("F2I.FTZ.S64.F64", 2.0) == 2);
 }
 
-TEST_CASE("F2I rounding", "[float_conversion]") {
+TEST_CASE("F2I Modes", "[shader]") {
     REQUIRE(EvalUnary<s32, f16>("F2I.FTZ.S32.F16", 1.5) == 2);
     REQUIRE(EvalUnary<s32, f32>("F2I.FTZ.S32.F32", 1.5) == 2);
     REQUIRE(EvalUnary<s32, f64>("F2I.FTZ.S32.F64", 1.5) == 2);
@@ -67,7 +65,7 @@ TEST_CASE("F2I rounding", "[float_conversion]") {
     REQUIRE(EvalUnary<s32, f64>("F2I.FTZ.S32.F64.TRUNC", -1.8) == -1);
 }
 
-TEST_CASE("F2I clamp") {
+TEST_CASE("F2I Clamp", "[shader]") {
     REQUIRE(EvalUnary<u32, f32>("F2I.FTZ.U16.F32", f32{0x1'0000} + 1) == 0xffff);
     REQUIRE(EvalUnary<u32, f32>("F2I.FTZ.U16.F32", -f32{0x1'0000}) == 0);
 
@@ -87,7 +85,7 @@ TEST_CASE("F2I clamp") {
     REQUIRE(EvalUnary<u64, f32>("F2I.FTZ.S64.F32", -1.8446744e+19) == 0x8000'0000'0000'0000ull);
 }
 
-TEST_CASE("F2I FTZ") {
+TEST_CASE("F2I Denorm", "[shader]") {
     static constexpr f32 denorm{1e-40};
     static_assert(denorm > 0);
     REQUIRE(EvalUnary<s32, f32>("F2I.FTZ.S32.F32.CEIL", denorm) == 0);
@@ -97,7 +95,7 @@ TEST_CASE("F2I FTZ") {
     REQUIRE(EvalUnary<s32, f32>("F2I.S32.F32.FLOOR", -denorm) == -1);
 }
 
-TEST_CASE("F2I NAN") {
+TEST_CASE("F2I NAN", "[shader]") {
     static constexpr f32 f32_qnan{std::numeric_limits<f32>::quiet_NaN()};
     static constexpr f64 f64_qnan{std::numeric_limits<f64>::quiet_NaN()};
 
