@@ -41,7 +41,6 @@ TEST_CASE("FADD Infinity", "[float_arithmetic]") {
     REQUIRE(std::isnan(EvalBinaryImm<f32>("FADD.FTZ", -inf, inf)));
 }
 
-/*
 TEST_CASE("FADD Rounding", "[float_arithmetic]") {
     REQUIRE(EvalBinary<f32>("FADD.FTZ.RN", 0.001f, 0.002f) <= 0.003f);
     REQUIRE(EvalBinary<f32>("FADD.FTZ.RZ", 0.001f, 0.002f) <= 0.003f);
@@ -53,7 +52,6 @@ TEST_CASE("FADD Rounding", "[float_arithmetic]") {
     REQUIRE(EvalBinary<f32>("FADD.FTZ.RZ", -0.001f, -0.002f) >= -0.003f);
     REQUIRE(EvalBinary<f32>("FADD.FTZ.RP", -0.001f, -0.002f) >= -0.003f);
 }
-*/
 
 TEST_CASE("FADD Denorm", "[float_arithmetic]") {
     static constexpr f32 denorm{1e-40};
