@@ -4,10 +4,10 @@
 
 #include <deko3d.hpp>
 
-#include "../cmd_util.h"
-#include "../compare.h"
-#include "../device.h"
-#include "../resource.h"
+#include "cmd_util.h"
+#include "compare.h"
+#include "device.h"
+#include "resource.h"
 
 TEST_CASE("Basic", "[clear]") {
     RenderTarget2D render_target{DkImageFormat_RGBA8_Unorm, 64, 64};

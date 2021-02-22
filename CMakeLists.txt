@@ -25,16 +25,18 @@ add_executable(nxgpucatch
     src/shader.cpp
     src/shader.h
     src/tests/clear.cpp
-    src/tests/f2i.cpp
-    src/tests/fadd.cpp
-    src/tests/isetp.cpp
-    src/tests/p2r.cpp
     src/tests/render_formats.cpp
+    src/tests/shader/f2i.cpp
+    src/tests/shader/fadd.cpp
+    src/tests/shader/isetp.cpp
+    src/tests/shader/mov.cpp
+    src/tests/shader/p2r.cpp
     src/wait_input.cpp
     src/wait_input.h
 )
 
 target_link_libraries(nxgpucatch switch::deko3d switch::libnx Catch2::Catch2 nxas_lib)
+target_include_directories(nxgpucatch PRIVATE src)
 target_compile_options(nxgpucatch PRIVATE
     -std=c++20
     -Wall

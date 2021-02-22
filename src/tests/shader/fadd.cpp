@@ -1,6 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include "../eval_util.h"
+#include "eval_util.h"
 
 using namespace EvalUtil;
 

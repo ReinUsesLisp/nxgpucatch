@@ -1,6 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include "../eval_util.h"
+#include "eval_util.h"
 
 static uint32_t Run(std::string code, uint32_t value = 0) {
     return EvalUtil::Run(".dksh compute\n"

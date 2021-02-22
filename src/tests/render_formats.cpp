@@ -2,10 +2,10 @@
 
 #include <deko3d.hpp>
 
-#include "../cmd_util.h"
-#include "../compare.h"
-#include "../device.h"
-#include "../resource.h"
+#include "cmd_util.h"
+#include "compare.h"
+#include "device.h"
+#include "resource.h"
 
 template <typename ClearInput, typename RefType>
 static bool Test(DkImageFormat format, const ClearInput& clear, const RefType& ref,
