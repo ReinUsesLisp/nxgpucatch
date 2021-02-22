@@ -27,6 +27,7 @@ add_executable(nxgpucatch
     src/tests/clear.cpp
     src/tests/f2i.cpp
     src/tests/fadd.cpp
+    src/tests/isetp.cpp
     src/tests/p2r.cpp
     src/tests/render_formats.cpp
     src/wait_input.cpp

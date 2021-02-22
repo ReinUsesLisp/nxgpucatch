@@ -41,7 +41,7 @@ TEST_CASE("FADD INF", "[shader]") {
     REQUIRE(std::isnan(EvalBinaryImm<f32>("FADD.FTZ", -inf, inf)));
 }
 
-TEST_CASE("FADD Rounding", "[shader]") {
+TEST_CASE("FADD Rounding", "[shader][fpcontrol]") {
     REQUIRE(EvalBinary<f32>("FADD.FTZ.RN", 0.001f, 0.002f) <= 0.003f);
     REQUIRE(EvalBinary<f32>("FADD.FTZ.RZ", 0.001f, 0.002f) <= 0.003f);
     REQUIRE(EvalBinary<f32>("FADD.FTZ.RM", 0.001f, 0.002f) <= 0.003f);
@@ -53,7 +53,7 @@ TEST_CASE("FADD Rounding", "[shader]") {
     REQUIRE(EvalBinary<f32>("FADD.FTZ.RP", -0.001f, -0.002f) >= -0.003f);
 }
 
-TEST_CASE("FADD Denorm", "[shader]") {
+TEST_CASE("FADD Denorm", "[shader][fpcontrol]") {
     static constexpr f32 denorm{1e-40};
     static constexpr f32 denorm_two{denorm + denorm};
     REQUIRE(EvalBinary<f32>("FADD", denorm, denorm) == denorm_two);
