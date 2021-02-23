@@ -25,6 +25,7 @@ TEST_CASE("FMUL Simple", "[shader]") {
 
     REQUIRE(Run(1, "FMUL32I.FTZ R2, R2, 1.0;") == 1.5f);
     REQUIRE(Run(1, "FMUL32I.FTZ R2, R2, -2.0;") == -3.0f);
+    REQUIRE(Run(1, "FMUL32I.FTZ.SAT R2, R2, -2.0;") == 0.0f);
 }
 
 TEST_CASE("FMUL Scale", "[shader]") {
@@ -57,6 +58,8 @@ TEST_CASE("FMUL NAN", "[shader]") {
     REQUIRE(std::isnan(EvalBinaryImm<f32>("FMUL.FTZ", 0.0f, INFINITY)));
     REQUIRE(EvalBinaryImm<f32>("FMUL.FTZ.SAT", 2.0f, NAN) == 0.0f);
     REQUIRE(EvalBinaryImm<f32>("FMUL.FTZ.SAT", -2.0f, NAN) == 0.0f);
+    REQUIRE(EvalBinaryImm<f32>("FMUL.FTZ.SAT", 2.0f, INFINITY) == 1.0f);
+    REQUIRE(EvalBinaryImm<f32>("FMUL.FTZ.SAT", 2.0f, -INFINITY) == 0.0f);
 }
 
 TEST_CASE("FMUL FMZ", "[shader]") {
