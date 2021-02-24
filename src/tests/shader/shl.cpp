@@ -2,8 +2,6 @@
 
 #include "eval_util.h"
 
-using namespace EvalUtil;
-
 static uint32_t Run(uint32_t value, std::string code) {
     return EvalUtil::Run(".dksh compute\n"
                          "main:\n"
