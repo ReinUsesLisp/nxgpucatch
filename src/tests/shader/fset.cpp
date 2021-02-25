@@ -77,6 +77,8 @@ TEST_CASE("FSET NAN", "[shader]") {
     REQUIRE(Run(inf, inf, "FSET.LT.FTZ.AND R2, R2, R3, PT;") == 0);
     REQUIRE(Run(-inf, 0.0f, "FSET.LT.FTZ.AND R2, R2, R3, PT;") == -1);
     REQUIRE(Run(-inf, inf, "FSET.LT.FTZ.AND R2, R2, R3, PT;") == -1);
+
+    REQUIRE(Run(0.0f, BitCast<float>(0x8000'0000), "FSET.EQ.FTZ.AND R2, R2, R3, PT;") == -1);
 }
 
 TEST_CASE("FSET Denorm", "[shader][fpcontrol]") {
