@@ -26,6 +26,8 @@ add_executable(nxgpucatch
     src/shader.h
     src/tests/clear.cpp
     src/tests/render_formats.cpp
+    src/tests/shader/bfe.cpp
+    src/tests/shader/bfi.cpp
     src/tests/shader/f2i.cpp
     src/tests/shader/fadd.cpp
     src/tests/shader/fcmp.cpp
