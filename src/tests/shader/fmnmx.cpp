@@ -34,6 +34,9 @@ TEST_CASE("FMNMX Simple", "[shader]") {
 
     REQUIRE(Run(-1.0f, -3.0f, "FMNMX.FTZ R2, |R2|, R3, PT;") == -3.0f);
     REQUIRE(Run(-3.0f, -1.0f, "FMNMX.FTZ R2, R2, |R3|, !PT;") == 1.0f);
+
+    REQUIRE(Run(-3.0f, -1.0f, "FMNMX.FTZ R2, R2, -|R3|, !PT;") == -1.0f);
+    REQUIRE(Run(-3.0f, -1.0f, "FMNMX.FTZ R2, -|R2|, -|R3|, PT;") == -3.0f);
 }
 
 TEST_CASE("FMNMX NAN", "[shader]") {
