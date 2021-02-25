@@ -32,6 +32,10 @@ TEST_CASE("SHR Negatives", "[shader]") {
 }
 
 TEST_CASE("SHR BREV", "[shader]") {
+    REQUIRE(Run(3, "MOV R3, 1; SHR.U32.BREV R2, R3, RZ;") == 0x8000'0000);
+    REQUIRE(Run(1, "MOV R2, c[2][0]; SHR.S32.BREV R2, R2, RZ;") == 0x8000'0000);
+    REQUIRE(Run(0x8000'0000, "MOV R2, c[2][0]; SHR.S32.BREV R2, R2, RZ;") == 1);
+
     REQUIRE(Run(3, "SHR.U32.BREV R2, R3, c[2][0];") == 0x40'0000);
     REQUIRE(Run(3, "SHR.S32.BREV R2, R3, c[2][0];") == 0x40'0000);
 
