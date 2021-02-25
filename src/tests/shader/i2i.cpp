@@ -37,6 +37,10 @@ TEST_CASE("I2I Simple", "[shader]") {
     REQUIRE(Run(0xffccff7f, "I2I.S32.S16 R2, R2.B2;") == 0xffffffcc);
     REQUIRE(Run(0xffccff7f, "I2I.S32.U16 R2, R2.B2;") == 0x0000ffcc);
     REQUIRE(Run(0x7fccff7f, "I2I.S32.S16 R2, R2.B2;") == 0x00007fcc);
+
+    REQUIRE(Run(0xff, "I2I.S32.S8 R2, |R2|;") == 1);
+    REQUIRE(Run(0xff, "I2I.S32.S8 R2, -R2;") == 1);
+    REQUIRE(Run(0xff, "I2I.S32.S8 R2, -|R2|;") == 0xffffffff);
     
     static constexpr int32_t VALUES[]{
         -5,     16,    -140,   170,   -280,       260,         -5001,      5013,
