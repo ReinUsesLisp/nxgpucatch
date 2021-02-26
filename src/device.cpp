@@ -7,5 +7,7 @@ void InitializeDevice() {
     device = dk::DeviceMaker{}
                  .setFlags(DkDeviceFlags_DepthMinusOneToOne | DkDeviceFlags_OriginUpperLeft)
                  .create();
-    queue = dk::QueueMaker{device}.create();
+    queue = dk::QueueMaker{device}
+                .setPerWarpScratchMemorySize(128 * DK_PER_WARP_SCRATCH_MEM_ALIGNMENT)
+                .create();
 }

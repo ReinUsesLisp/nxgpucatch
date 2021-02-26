@@ -61,6 +61,7 @@ add_executable(nxgpucatch
     src/tests/shader/shl.cpp
     src/tests/shader/shr.cpp
     src/tests/shader/stg.cpp
+    src/tests/shader/stls.cpp
     src/tests/shader/xmad.cpp
     src/wait_input.cpp
     src/wait_input.h
