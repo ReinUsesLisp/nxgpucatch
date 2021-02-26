@@ -17,7 +17,7 @@ static uint32_t Run(uint32_t value, std::string code) {
 }
 
 template <typename Dest, typename Src>
-[[maybe_unused]] uint32_t Cast(int32_t v) {
+uint32_t Cast(int32_t v) {
     Src src{};
     std::memcpy(&src, &v, sizeof(src));
     Dest dest = static_cast<Dest>(src);
