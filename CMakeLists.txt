@@ -44,6 +44,7 @@ add_executable(nxgpucatch
     src/tests/shader/iadd3.cpp
     src/tests/shader/icmp.cpp
     src/tests/shader/imnmx.cpp
+    src/tests/shader/iscadd.cpp
     src/tests/shader/iset.cpp
     src/tests/shader/isetp.cpp
     src/tests/shader/ldg.cpp
