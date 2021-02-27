@@ -125,3 +125,20 @@ TEST_CASE("VOTE Predicate", "[shader]") {
         SEL R2, RZ, 1, !P0;  
     )") == 1);
 }
+
+TEST_CASE("VOTE Ballot catching 64 thread GPUs", "[shader]") {
+    REQUIRE(EvalUtil::Run(R"(.dksh compute
+.workgroup_size 64 1 1
+main:
+MOV R0, c[0][0x140];
+MOV R1, c[0][0x144];
+S2R R3, SR_TID.X;
+ISETP.LT.AND P0, PT, R3, 32, PT;
+@P0 EXIT;
+ISETP.GE.AND P0, PT, R3, 48, PT;
+@P0 EXIT;
+VOTE.ALL R2, PT, PT;
+ISETP.EQ.AND P0, PT, R3, 32, PT;
+@P0 STG.E [R0], R2;
+    )") == 0xffff);
+}
