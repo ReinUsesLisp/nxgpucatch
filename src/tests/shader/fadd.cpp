@@ -1,8 +1,21 @@
 #include <catch2/catch_test_macros.hpp>
 
+#include "bit_cast.h"
 #include "eval_util.h"
 
 using namespace EvalUtil;
+
+static float Run(float value, std::string code) {
+    return BitCast<float>(EvalUtil::Run(".dksh compute\n"
+                                        "main:\n"
+                                        "MOV R0, c[0x0][0x140];\n"
+                                        "MOV R1, c[0x0][0x144];\n"
+                                        "MOV R2, c[2][0];" +
+                                            code +
+                                            "STG.E [R0], R2;\n"
+                                            "EXIT;\n",
+                                        value));
+}
 
 TEST_CASE("FADD Simple", "[shader]") {
     REQUIRE(EvalBinaryImm<f32>("FADD.FTZ", 5.0f, 3.0f) == 8.0f);
@@ -16,6 +29,9 @@ TEST_CASE("FADD Simple", "[shader]") {
     REQUIRE(EvalBinaryImm<f32>("FADD.FTZ", 1.0f, -2.0f, false, false, true, false) == 3.0f);
     REQUIRE(EvalBinaryImm<f32>("FADD.FTZ", 1.0f, -2.0f, false, false, false, true) == 3.0f);
     REQUIRE(EvalBinaryImm<f32>("FADD.FTZ", 1.0f, -2.0f, false, false, true, true) == -1.0f);
+
+    REQUIRE(Run(5.0f, "FADD32I.FTZ R2, R2, 3.0;") == 8.0f);
+    REQUIRE(Run(5.0f, "FADD32I.FTZ R2, -R2, 3.0;") == -2.0f);
 }
 
 TEST_CASE("FADD Saturate", "[shader]") {
@@ -58,4 +74,7 @@ TEST_CASE("FADD Denorm", "[shader][fpcontrol]") {
     static constexpr f32 denorm_two{denorm + denorm};
     REQUIRE(EvalBinary<f32>("FADD", denorm, denorm) == denorm_two);
     REQUIRE(EvalBinary<f32>("FADD.FTZ", denorm, denorm) == 0);
+
+    REQUIRE(Run(denorm, "FADD32I R2, R2, 0.0;") > 0.0f);
+    REQUIRE(Run(denorm, "FADD32I.FTZ R2, R2, 0.0;") == 0.0f);
 }
