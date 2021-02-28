@@ -59,6 +59,7 @@ add_executable(nxgpucatch
     src/tests/shader/pset.cpp
     src/tests/shader/psetp.cpp
     src/tests/shader/r2p.cpp
+    src/tests/shader/red.cpp
     src/tests/shader/sel.cpp
     src/tests/shader/shf.cpp
     src/tests/shader/shfl.cpp
