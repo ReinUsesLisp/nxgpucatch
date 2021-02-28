@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <string>
 
+#include "bit_cast.h"
 #include "cmd_util.h"
 #include "heap.h"
 #include "shader.h"
@@ -147,7 +148,9 @@ template <typename Result = u32, typename InputData = u32>
 
 template <typename Type>
 void RequireEqual(Type a, Type b) {
-    if (std::is_floating_point_v<Type> || std::is_same_v<Type, f16>) {
+    if constexpr (std::is_same_v<Type, f16>) {
+        REQUIRE(BitCast<u16>(a) == BitCast<u16>(b));
+    } else if constexpr (std::is_floating_point_v<Type>) {
         if (std::isnan(a)) {
             REQUIRE(std::isnan(a) == std::isnan(b));
         } else {
