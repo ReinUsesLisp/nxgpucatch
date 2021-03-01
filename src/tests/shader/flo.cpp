@@ -44,6 +44,10 @@ TEST_CASE("FLO SH", "[shader]") {
     REQUIRE(Run(0xf0f0'0000, "FLO.S32.SH R2, c[2][0];") == 4);
     REQUIRE(Run(0xf000'0000, "FLO.S32.SH R2, c[2][0];") == 4);
     REQUIRE(Run(0x9000'0000, "FLO.S32.SH R2, c[2][0];") == 1);
+    REQUIRE(Run(0xffff'ffff, "FLO.S32.SH R2, c[2][0];") == 0xffff'ffff);
+    REQUIRE(Run(0x0000'0000, "FLO.S32.SH R2, c[2][0];") == 0xffff'ffff);
+    REQUIRE(Run(0xffff'ffff, "FLO.U32.SH R2, c[2][0];") == 0);
+    REQUIRE(Run(0x0000'0000, "FLO.U32.SH R2, c[2][0];") == 0xffff'ffff);
 }
 
 TEST_CASE("FLO Invert", "[shader]") {
