@@ -18,6 +18,7 @@ add_executable(nxgpucatch
     src/device.h
     src/eval_util.h
     src/formats.h
+    src/fp16_run.h
     src/heap.h
     src/main.cpp
     src/resource.cpp
@@ -40,8 +41,9 @@ add_executable(nxgpucatch
     src/tests/shader/fmul.cpp
     src/tests/shader/fset.cpp
     src/tests/shader/fsetp.cpp
-    src/tests/shader/i2i.cpp
+    src/tests/shader/hadd2.cpp
     src/tests/shader/i2f.cpp
+    src/tests/shader/i2i.cpp
     src/tests/shader/iadd.cpp
     src/tests/shader/iadd3.cpp
     src/tests/shader/icmp.cpp
@@ -54,8 +56,8 @@ add_executable(nxgpucatch
     src/tests/shader/lea.cpp
     src/tests/shader/lop.cpp
     src/tests/shader/lop3.cpp
-    src/tests/shader/mufu.cpp
     src/tests/shader/mov.cpp
+    src/tests/shader/mufu.cpp
     src/tests/shader/p2r.cpp
     src/tests/shader/popc.cpp
     src/tests/shader/pset.cpp
