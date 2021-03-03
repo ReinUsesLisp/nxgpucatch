@@ -4,11 +4,6 @@
 
 using namespace Fp16Run;
 
-using V = std::array<float, 2>;
-[[maybe_unused]] inline V X(f16x2 v) {
-    return {v[0], v[1]};
-}
-
 TEST_CASE("HFMA2 Simple", "[shader]") {
     REQUIRE(RunF16x2({1, 2}, {2, 1}, {1, 2}, "HFMA2.FTZ R2, R3, R4, R5;") == f16x2{3, 4});
 
@@ -94,11 +89,11 @@ TEST_CASE("HFMA2 Simple", "[shader]") {
     REQUIRE(RunF32({1, 2}, {2, 1}, {1, 1}, "HFMA2.F32.FTZ R2, R3, 1, 2, R5;", {0, 0}) == 3);
     REQUIRE(RunF32({1, 2}, {2, 1}, {1, 1}, "HFMA2.F32.FTZ.SAT R2, R3, 1, 2, R5;", {0, 0}) == 1);
 
-    REQUIRE(X(RunF16x2({1, 2}, 0, 0, "HFMA2_32I.FTZ R2, R3, 1, 2, R2;", {1, 2})) == V{3, 4});
-    REQUIRE(X(RunF16x2({1, 2}, 0, 0, "HFMA2_32I.FTZ R2, R3, 1, 2, -R2;", {1, 2})) == V{1, 0});
-    REQUIRE(X(RunF16x2({1, 2}, 0, 0, "HFMA2_32I.FTZ R2, R3.H0_H0, 1, 2, R2;", {1, 2})) == V{3, 3});
-    REQUIRE(X(RunF16x2({1, 2}, 0, 0, "HFMA2_32I.FTZ R2, R3.H1_H1, 1, 2, R2;", {1, 2})) == V{5, 4});
-    REQUIRE(X(RunF16x2(3, 0, 0, "HFMA2_32I.FTZ R2, R3.F32, 1, 2, R2;", {1, 2})) == V{7, 5});
+    REQUIRE(RunF16x2({1, 2}, 0, 0, "HFMA2_32I.FTZ R2, R3, 1, 2, R2;", {1, 2}) == f16x2{3, 4});
+    REQUIRE(RunF16x2({1, 2}, 0, 0, "HFMA2_32I.FTZ R2, R3, 1, 2, -R2;", {1, 2}) == f16x2{1, 0});
+    REQUIRE(RunF16x2({1, 2}, 0, 0, "HFMA2_32I.FTZ R2, R3.H0_H0, 1, 2, R2;", {1, 2}) == f16x2{3, 3});
+    REQUIRE(RunF16x2({1, 2}, 0, 0, "HFMA2_32I.FTZ R2, R3.H1_H1, 1, 2, R2;", {1, 2}) == f16x2{5, 4});
+    REQUIRE(RunF16x2(3, 0, 0, "HFMA2_32I.FTZ R2, R3.F32, 1, 2, R2;", {1, 2}) == f16x2{7, 5});
 }
 
 TEST_CASE("HFMA2 Promotions", "[shader]") {
