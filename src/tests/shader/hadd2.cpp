@@ -37,6 +37,7 @@ TEST_CASE("HADD2 Simple", "[shader]") {
     REQUIRE(RunF16x2({1, 3}, 5, "HADD2.FTZ R2, R3.H1_H0, -c[2][8];") == f16x2{-4, -2});
 
     REQUIRE(RunF16x2({1, 3}, 0, "HADD2.FTZ R2, R3.H1_H0, -4, 2;") == f16x2{3, -1});
+    REQUIRE(RunF16x2({1, 3}, 0, "HADD2.FTZ R2, -R3.H1_H0, -4, 2;") == f16x2{1, -7});
 
     REQUIRE(RunF32({1, 3}, 0, "HADD2.F32.FTZ R2, R3.H1_H0, -4, 2;") == 3);
 
