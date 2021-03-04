@@ -28,6 +28,7 @@ add_executable(nxgpucatch
     src/tests/clear.cpp
     src/tests/render_formats.cpp
     src/tests/shader/atom.cpp
+    src/tests/shader/atoms.cpp
     src/tests/shader/bfe.cpp
     src/tests/shader/bfi.cpp
     src/tests/shader/cset.cpp
