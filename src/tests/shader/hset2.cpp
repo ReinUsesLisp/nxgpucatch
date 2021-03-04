@@ -51,11 +51,15 @@ TEST_CASE("HSET2 Simple", "[shader]") {
     REQUIRE(Run(f16x2{1, 2}, f16x2{-2, -2}, "HSET2.LTU.FTZ.AND R2, R2, |R3|, PT;") == 0x0000'ffff);
     REQUIRE(Run(f16x2{1, 2}, f16x2{2, 2}, "HSET2.LTU.FTZ.AND R2, -R2, R3, PT;") == 0xffff'ffff);
     REQUIRE(Run(f16x2{-1, -2}, f16x2{2, 2}, "HSET2.LTU.FTZ.AND R2, |R2|, R3, PT;") == 0x0000'ffff);
-    REQUIRE(Run(f16x2{1, 2}, f16x2{2, 2}, "HSET2.LTU.FTZ.AND R2, R2.H1_H1, R3, PT;") == 0x0000'0000);
-    REQUIRE(Run(f16x2{1, 2}, f16x2{2, 2}, "HSET2.LTU.FTZ.AND R2, R2.H0_H0, R3, PT;") == 0xffff'ffff);
+    REQUIRE(Run(f16x2{1, 2}, f16x2{2, 2}, "HSET2.LTU.FTZ.AND R2, R2.H1_H1, R3, PT;") ==
+            0x0000'0000);
+    REQUIRE(Run(f16x2{1, 2}, f16x2{2, 2}, "HSET2.LTU.FTZ.AND R2, R2.H0_H0, R3, PT;") ==
+            0xffff'ffff);
     REQUIRE(Run(3.0f, f16x2{2, 2}, "HSET2.LTU.FTZ.AND R2, R2.F32, R3, PT;") == 0x0000'0000);
-    REQUIRE(Run(f16x2{1, 2}, f16x2{1, 2}, "HSET2.LEU.FTZ.AND R2, R2, R3.H0_H0, PT;") == 0x0000'ffff);
-    REQUIRE(Run(f16x2{1, 2}, f16x2{1, 2}, "HSET2.LTU.FTZ.AND R2, R2, R3.H1_H1, PT;") == 0x0000'ffff);
+    REQUIRE(Run(f16x2{1, 2}, f16x2{1, 2}, "HSET2.LEU.FTZ.AND R2, R2, R3.H0_H0, PT;") ==
+            0x0000'ffff);
+    REQUIRE(Run(f16x2{1, 2}, f16x2{1, 2}, "HSET2.LTU.FTZ.AND R2, R2, R3.H1_H1, PT;") ==
+            0x0000'ffff);
     REQUIRE(Run(f16x2{1, 2}, 2.0f, "HSET2.LTU.FTZ.AND R2, R2, R3.F32, PT;") == 0x0000'ffff);
     REQUIRE(Run(f16x2{1, 2}, f16x2{2, 2}, "HSET2.LTU.FTZ.OR R2, R2, R3, PT;") == 0xffff'ffff);
     REQUIRE(Run(f16x2{1, 2}, f16x2{2, 2}, "HSET2.LTU.FTZ.XOR R2, R2, R3, PT;") == 0xffff'0000);
@@ -71,8 +75,10 @@ TEST_CASE("HSET2 Simple", "[shader]") {
     REQUIRE(Run(f16x2{1, 2}, f16x2{2, 2}, "HSET2.LT.FTZ.AND R2, R2, -2, -2, PT;") == 0x0000'0000);
     REQUIRE(Run(f16x2{1, 2}, f16x2{2, 2}, "HSET2.LT.FTZ.AND R2, -R2, 2, 2, PT;") == 0xffff'ffff);
     REQUIRE(Run(f16x2{-1, -2}, f16x2{2, 2}, "HSET2.LT.FTZ.AND R2, |R2|, 2, 2, PT;") == 0x0000'ffff);
-    REQUIRE(Run(f16x2{1, 2}, f16x2{2, 2}, "HSET2.LT.FTZ.AND R2, R2.H1_H1, 2, 2, PT;") == 0x0000'0000);
-    REQUIRE(Run(f16x2{1, 2}, f16x2{2, 2}, "HSET2.LT.FTZ.AND R2, R2.H0_H0, 2, 2, PT;") == 0xffff'ffff);
+    REQUIRE(Run(f16x2{1, 2}, f16x2{2, 2}, "HSET2.LT.FTZ.AND R2, R2.H1_H1, 2, 2, PT;") ==
+            0x0000'0000);
+    REQUIRE(Run(f16x2{1, 2}, f16x2{2, 2}, "HSET2.LT.FTZ.AND R2, R2.H0_H0, 2, 2, PT;") ==
+            0xffff'ffff);
     REQUIRE(Run(3.0f, f16x2{2, 2}, "HSET2.LT.FTZ.AND R2, R2.F32, 2, 2, PT;") == 0x0000'0000);
     REQUIRE(Run(f16x2{1, 2}, f16x2{2, 2}, "HSET2.LT.FTZ.OR R2, R2, 2, 2, PT;") == 0xffff'ffff);
     REQUIRE(Run(f16x2{1, 2}, f16x2{2, 2}, "HSET2.LT.FTZ.XOR R2, R2, 2, 2, PT;") == 0xffff'0000);
@@ -88,13 +94,17 @@ TEST_CASE("HSET2 Simple", "[shader]") {
     REQUIRE(Run(f16x2{2, 3}, f16x2{2, 2}, "HSET2.NE.FTZ.AND R2, R2, c[2][4], PT;") == 0xffff'ffff);
     REQUIRE(Run(f16x2{1, 2}, f16x2{2, 2}, "HSET2.LT.FTZ.AND R2, R2, -c[2][4], PT;") == 0x0000'0000);
     REQUIRE(Run(f16x2{1, 2}, f16x2{2, 2}, "HSET2.LT.FTZ.AND R2, -R2, c[2][4], PT;") == 0xffff'ffff);
-    REQUIRE(Run(f16x2{-1, -2}, f16x2{2, 2}, "HSET2.LT.FTZ.AND R2, |R2|, c[2][4], PT;") == 0xffff'ffff);
-    REQUIRE(Run(f16x2{1, 2}, f16x2{2, 2}, "HSET2.LT.FTZ.AND R2, R2.H1_H1, c[2][4], PT;") == 0xffff'ffff);
-    REQUIRE(Run(f16x2{1, 2}, f16x2{2, 2}, "HSET2.LT.FTZ.AND R2, R2.H0_H0, c[2][4], PT;") == 0xffff'ffff);
+    REQUIRE(Run(f16x2{-1, -2}, f16x2{2, 2}, "HSET2.LT.FTZ.AND R2, |R2|, c[2][4], PT;") ==
+            0xffff'ffff);
+    REQUIRE(Run(f16x2{1, 2}, f16x2{2, 2}, "HSET2.LT.FTZ.AND R2, R2.H1_H1, c[2][4], PT;") ==
+            0xffff'ffff);
+    REQUIRE(Run(f16x2{1, 2}, f16x2{2, 2}, "HSET2.LT.FTZ.AND R2, R2.H0_H0, c[2][4], PT;") ==
+            0xffff'ffff);
     REQUIRE(Run(3.0f, f16x2{2, 2}, "HSET2.LT.FTZ.AND R2, R2.F32, c[2][4], PT;") == 0x0000'0000);
     REQUIRE(Run(f16x2{1, 2}, f16x2{2, 2}, "HSET2.LT.FTZ.OR R2, R2, c[2][4], PT;") == 0xffff'ffff);
     REQUIRE(Run(f16x2{1, 2}, f16x2{2, 2}, "HSET2.LT.FTZ.XOR R2, R2, c[2][4], PT;") == 0x0000'0000);
-    REQUIRE(Run(f16x2{1, 2}, f16x2{2, 2}, "HSET2.BF.LT.FTZ.AND R2, R2, c[2][4], PT;") == 0x3c00'3c00);
+    REQUIRE(Run(f16x2{1, 2}, f16x2{2, 2}, "HSET2.BF.LT.FTZ.AND R2, R2, c[2][4], PT;") ==
+            0x3c00'3c00);
 }
 
 TEST_CASE("HSET2 NAN", "[shader]") {
@@ -106,13 +116,27 @@ TEST_CASE("HSET2 NAN", "[shader]") {
     REQUIRE(Run(f16x2{1, nan}, f16x2{nan, nan}, "HSET2.GT.FTZ.AND R2, R2, R3, PT;") == 0x0000'0000);
     REQUIRE(Run(f16x2{1, nan}, f16x2{nan, nan}, "HSET2.NE.FTZ.AND R2, R2, R3, PT;") == 0x0000'0000);
     REQUIRE(Run(f16x2{1, nan}, f16x2{nan, nan}, "HSET2.GE.FTZ.AND R2, R2, R3, PT;") == 0x0000'0000);
-    REQUIRE(Run(f16x2{1, nan}, f16x2{nan, nan}, "HSET2.NUM.FTZ.AND R2, R2, R3, PT;") == 0x0000'0000);
+    REQUIRE(Run(f16x2{1, nan}, f16x2{nan, nan}, "HSET2.NUM.FTZ.AND R2, R2, R3, PT;") ==
+            0x0000'0000);
 
-    REQUIRE(Run(f16x2{1, nan}, f16x2{nan, nan}, "HSET2.NAN.FTZ.AND R2, R2, R3, PT;") == 0xffff'ffff);
-    REQUIRE(Run(f16x2{1, nan}, f16x2{nan, nan}, "HSET2.LTU.FTZ.AND R2, R2, R3, PT;") == 0xffff'ffff);
-    REQUIRE(Run(f16x2{1, nan}, f16x2{nan, nan}, "HSET2.EQU.FTZ.AND R2, R2, R3, PT;") == 0xffff'ffff);
-    REQUIRE(Run(f16x2{1, nan}, f16x2{nan, nan}, "HSET2.LEU.FTZ.AND R2, R2, R3, PT;") == 0xffff'ffff);
-    REQUIRE(Run(f16x2{1, nan}, f16x2{nan, nan}, "HSET2.GTU.FTZ.AND R2, R2, R3, PT;") == 0xffff'ffff);
-    REQUIRE(Run(f16x2{1, nan}, f16x2{nan, nan}, "HSET2.NEU.FTZ.AND R2, R2, R3, PT;") == 0xffff'ffff);
-    REQUIRE(Run(f16x2{1, nan}, f16x2{nan, nan}, "HSET2.GEU.FTZ.AND R2, R2, R3, PT;") == 0xffff'ffff);
+    REQUIRE(Run(f16x2{1, nan}, f16x2{nan, nan}, "HSET2.LTU.FTZ.AND R2, R2, R3, PT;") ==
+            0xffff'ffff);
+    REQUIRE(Run(f16x2{1, nan}, f16x2{nan, nan}, "HSET2.EQU.FTZ.AND R2, R2, R3, PT;") ==
+            0xffff'ffff);
+    REQUIRE(Run(f16x2{1, nan}, f16x2{nan, nan}, "HSET2.LEU.FTZ.AND R2, R2, R3, PT;") ==
+            0xffff'ffff);
+    REQUIRE(Run(f16x2{1, nan}, f16x2{nan, nan}, "HSET2.GTU.FTZ.AND R2, R2, R3, PT;") ==
+            0xffff'ffff);
+    REQUIRE(Run(f16x2{1, nan}, f16x2{nan, nan}, "HSET2.NEU.FTZ.AND R2, R2, R3, PT;") ==
+            0xffff'ffff);
+    REQUIRE(Run(f16x2{1, nan}, f16x2{nan, nan}, "HSET2.GEU.FTZ.AND R2, R2, R3, PT;") ==
+            0xffff'ffff);
+
+    REQUIRE(Run(f16x2{1, 1}, f16x2{nan, nan}, "HSET2.NUM.FTZ.AND R2, R2, R3, PT;") == 0x0000'0000);
+    REQUIRE(Run(f16x2{nan, 1}, f16x2{nan, 1}, "HSET2.NUM.FTZ.AND R2, R2, R3, PT;") == 0xffff'0000);
+
+    REQUIRE(Run(f16x2{1, nan}, f16x2{nan, nan}, "HSET2.NAN.FTZ.AND R2, R2, R3, PT;") ==
+            0xffff'ffff);
+    REQUIRE(Run(f16x2{1, 1}, f16x2{nan, nan}, "HSET2.NAN.FTZ.AND R2, R2, R3, PT;") == 0xffff'ffff);
+    REQUIRE(Run(f16x2{1, nan}, f16x2{1, nan}, "HSET2.NAN.FTZ.AND R2, R2, R3, PT;") == 0xffff'0000);
 }
