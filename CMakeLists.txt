@@ -30,6 +30,7 @@ add_executable(nxgpucatch
     src/tests/shader/atom.cpp
     src/tests/shader/bfe.cpp
     src/tests/shader/bfi.cpp
+    src/tests/shader/dadd.cpp
     src/tests/shader/f2f.cpp
     src/tests/shader/f2i.cpp
     src/tests/shader/fadd.cpp
