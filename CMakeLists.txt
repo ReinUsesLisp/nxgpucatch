@@ -34,6 +34,7 @@ add_executable(nxgpucatch
     src/tests/shader/dfma.cpp
     src/tests/shader/dmnmx.cpp
     src/tests/shader/dmul.cpp
+    src/tests/shader/dset.cpp
     src/tests/shader/f2f.cpp
     src/tests/shader/f2i.cpp
     src/tests/shader/fadd.cpp
