@@ -14,6 +14,7 @@ add_executable(nxgpucatch
     src/bit_cast.h
     src/cmd_util.h
     src/compare.h
+    src/descriptor_set.h
     src/device.cpp
     src/device.h
     src/eval_util.h
@@ -84,6 +85,7 @@ add_executable(nxgpucatch
     src/tests/shader/shr.cpp
     src/tests/shader/stg.cpp
     src/tests/shader/stls.cpp
+    src/tests/shader/tex.cpp
     src/tests/shader/vote.cpp
     src/tests/shader/xmad.cpp
     src/wait_input.cpp

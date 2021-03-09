@@ -69,7 +69,7 @@ TEST_CASE("LDC Simple", "[shader]") {
 }
 
 TEST_CASE("LDC Robustness", "[shader]") {
-    REQUIRE(Run<uint32_t>("MOV32I R0, 0xaaaaaa; LDC.32 R0, c[2][R0];", 0xdeadbeef) == 0);
+    REQUIRE(Run<uint32_t>("MOV32I R0, 0xaaaaa0; LDC.32 R0, c[2][R0];", 0xdeadbeef) == 0);
 }
 
 TEST_CASE("LDC IL", "[shader]") {
