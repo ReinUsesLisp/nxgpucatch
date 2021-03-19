@@ -37,3 +37,15 @@ TEST_CASE("LOP Predicate", "[shader]") {
     REQUIRE(Run(0, "LOP.AND.Z P0, RZ, RZ, RZ; @P0 MOV R2, 3;") == 3);
     REQUIRE(Run(0, "LOP.AND.NZ P0, RZ, R2, R2; @P0 MOV R2, 4;") == 4);
 }
+
+TEST_CASE("LOP32I", "[shader]") {
+    REQUIRE(Run(0, "LOP32I.AND R2, R2, 0xff;") == 0x00f0);
+    REQUIRE(Run(0, "LOP32I.OR R2, R2, 0xff;") == 0x0fff);
+    REQUIRE(Run(0, "LOP32I.XOR R2, R2, 0xff;") == 0x0f0f);
+    REQUIRE(Run(0, "LOP32I.PASS_B R2, R2, 0xff;") == 0x00ff);
+    REQUIRE(Run(0, "LOP32I.PASS_B R2, R2, 0xdead;") == 0xdead);
+    REQUIRE(Run(0, "LOP32I.PASS_B R2, R2, 0x40;") == 0x40);
+    REQUIRE(Run(0, "LOP32I.AND R2, R2, 0xff .INV;") == 0x0f00);
+    REQUIRE(Run(0, "LOP32I.AND R2, ~R2, 0xff .INV;") == 0xffff'f000);
+    REQUIRE(Run(0, "LOP32I.AND R2, ~R2, 0xff;") == 0x000f);
+}
