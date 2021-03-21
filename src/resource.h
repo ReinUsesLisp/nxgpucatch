@@ -103,8 +103,12 @@ public:
         FillColor(mip, std::array<uint8_t, 4>{red, green, blue, alpha});
     }
 
-    void* CpuAddr() const noexcept {
+    [[nodiscard]] void* CpuAddr() const noexcept {
         return m_image.Heap().getCpuAddr();
+    }
+
+    [[nodiscard]] size_t SizeBytes() const noexcept {
+        return m_image.Heap().getSize();
     }
 
 private:
