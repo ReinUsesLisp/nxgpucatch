@@ -56,12 +56,59 @@ TEST_CASE("I2F Simple", "[shader]") {
     REQUIRE(Run<f32>(u32{0x0000'ff00}, "I2F.F32.U8 R2, c[2][0].B1;") == 255);
     REQUIRE(Run<f32>(u32{0x00ff'0000}, "I2F.F32.U8 R2, c[2][0].B2;") == 255);
     REQUIRE(Run<f32>(u32{0xff00'0000}, "I2F.F32.U8 R2, c[2][0].B3;") == 255);
+
+    constexpr u64 large_u64_a = 0xffff'ffff'ffff'ffff;
+    constexpr u64 large_u64_b = 0xffff'cccc'ffff'dddd;
+    constexpr u64 large_u64_c = 0xffff'3333'aaaa'ffff;
+    REQUIRE(Run<f32>(large_u64_a, "I2F.F32.U64 R2, c[2][0];") == 18446744073709551616.0f);
+    REQUIRE(Run<f32>(large_u64_b, "I2F.F32.U64 R2, c[2][0];") == 18446687998616535040.0f);
+    REQUIRE(Run<f32>(large_u64_c, "I2F.F32.U64 R2, c[2][0];") == 18446518673825857536.0f);
+    REQUIRE(Run<f32>(large_u64_a, "I2F.F32.U64 R2, 3;") == 0x3'0000'0000);
+    REQUIRE(Run<f32>(large_u64_a, "I2F.F32.U64 R2, -3;") == 18446744073709551616.0f);
+
+    REQUIRE(Run<f32>(s16{-0x7000}, "I2F.F32.S16 R2, |c[2][0]|;") == 0x7000);
+    REQUIRE(Run<f32>(s16{-0x7000}, "I2F.F32.S16 R2, -c[2][0];") == 0x7000);
+    REQUIRE(Run<f32>(s16{-0x7000}, "I2F.F32.S16 R2, -|c[2][0]|;") == -0x7000);
 }
 
 TEST_CASE("I2F Undefined", "[shader][undefined]") {
     REQUIRE(Run<f32>(u16{0x8000}, "I2F.F32.S16 R2, -c[2][0];") == -0x8000);
     REQUIRE(Run<f32>(u32{0x8000'0000}, "I2F.F32.S32 R2, -c[2][0];") == -2147483648.0f);
     REQUIRE(Run<f32>(u32{0x8000'0000}, "I2F.F32.S32 R2, c[2][0];") == -2147483648.0f);
+
+    REQUIRE(Run<f32>(u16{0x8000}, "I2F.F32.U16 R2, -c[2][0];") == -0x8000);
+    REQUIRE(Run<f32>(u16{0x8000}, "I2F.F32.U16 R2, |c[2][0]|;") == 0x8000);
+    REQUIRE(Run<f32>(u32{0x9000'0000}, "I2F.F32.U32 R2, c[2][0];") == 0x9000'0000);
+    REQUIRE(Run<f32>(u32{0x9000'0000}, "I2F.F32.U32 R2, |c[2][0]|;") == 0x9000'0000);
+
+    REQUIRE(Run<f32>(u16{0x9000}, "I2F.F32.U16 R2, -c[2][0];") == -0x9000);
+    REQUIRE(Run<f32>(u16{0x9000}, "I2F.F32.U16 R2, |c[2][0]|;") == 0x9000);
+    REQUIRE(Run<f32>(u16{0x9000}, "I2F.F32.U16 R2, -|c[2][0]|;") == -0x9000);
+
+    REQUIRE(Run<f32>(u16{0x9000}, "I2F.F32.S16 R2, -c[2][0];") == 0x7000);
+    REQUIRE(Run<f32>(u16{0x9000}, "I2F.F32.S16 R2, |c[2][0]|;") == 0x7000);
+    REQUIRE(Run<f32>(u16{0x9000}, "I2F.F32.S16 R2, -|c[2][0]|;") == -0x7000);
+
+    REQUIRE(Run<f32>(u8{0x90}, "I2F.F32.U8 R2, -c[2][0];") == -0x90);
+    REQUIRE(Run<f32>(u8{0x90}, "I2F.F32.U8 R2, |c[2][0]|;") == 0x90);
+    REQUIRE(Run<f32>(u8{0x90}, "I2F.F32.U8 R2, -|c[2][0]|;") == -0x90);
+
+    REQUIRE(Run<f32>(u8{0x90}, "I2F.F32.S8 R2, -c[2][0];") == 0x70);
+    REQUIRE(Run<f32>(u8{0x90}, "I2F.F32.S8 R2, |c[2][0]|;") == 0x70);
+    REQUIRE(Run<f32>(u8{0x90}, "I2F.F32.S8 R2, -|c[2][0]|;") == -0x70);
+
+    constexpr s64 min_s64 = std::numeric_limits<s64>::min();
+    constexpr s64 max_s64 = std::numeric_limits<s64>::max();
+    REQUIRE(Run<f32, u64>(min_s64, "I2F.F32.S64 R2, -c[2][0];") == min_s64);
+    REQUIRE(Run<f32, u64>(min_s64, "I2F.F32.S64 R2, |c[2][0]|;") == min_s64);
+    REQUIRE(Run<f32, u64>(min_s64 + 1, "I2F.F32.S64 R2, -c[2][0];") == max_s64);
+    REQUIRE(Run<f32, u64>(min_s64 + 1, "I2F.F32.S64 R2, |c[2][0]|;") == max_s64);
+
+    REQUIRE(Run<f32, s8>(-0x80, "I2F.F32.S8 R2, -c[2][0];") == -0x80);
+    REQUIRE(Run<f32, s8>(-0x80, "I2F.F32.S8 R2, |c[2][0]|;") == -0x80);
+
+    REQUIRE(Run<f32, s16>(-0x8000, "I2F.F32.S16 R2, -c[2][0];") == -0x8000);
+    REQUIRE(Run<f32, s16>(-0x8000, "I2F.F32.S16 R2, |c[2][0]|;") == -0x8000);
 }
 
 TEST_CASE("I2F Rounding", "[shader][cvtrounding]") {
