@@ -189,6 +189,23 @@ TEST_CASE("TLD4 2D", "[shader]") {
             TLD4.R.B.PTP PT, R0, R0, R4, 0, 2D, 0xf;
         )")) == Color{0, 1, 1, 0});
     }
+    SECTION("Sparse") {
+        REQUIRE(util.Run(MakeShader(R"(
+            MOV R0, 1;
+            ISETP.F.AND P0, PT, RZ, RZ, PT;
+            TLD4.R P0, R0, R0, RZ, 0x28, ARRAY_2D, 0xf;
+            @P0 FADD.FTZ R0, RZ, -2;
+            @!P0 FADD.FTZ R0, RZ, 2;
+        )")) == Color{2, 0, 1, 1});
+
+        REQUIRE(util.Run(MakeShader(R"(
+            MOV R0, 1;
+            ISETP.T.AND P0, PT, RZ, RZ, PT;
+            TLD4.R P0, R0, R0, RZ, 0x28, ARRAY_2D, 0xf;
+            @P0 FADD.FTZ R0, RZ, -2;
+            @!P0 FADD.FTZ R0, RZ, 2;
+        )")) == Color{2, 0, 1, 1});
+    }
 }
 
 TEST_CASE("TLD4 Cube", "[shader]") {
