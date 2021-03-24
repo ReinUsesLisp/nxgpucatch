@@ -204,6 +204,16 @@ TEST_CASE("TEX 2D", "[shader]") {
             MOV32I R0, 0x00000000;
             MOV32I R1, 0x00000000;
             MOV R2, RZ;
+            MOV32I R3, 0x3f000000;
+            MOV R4, c[2][0];
+            MOV32I R5, 0x40400000;
+            TEX.B.LL PT, R0, R0, R4, 0x0, 2D, 0xa;
+        )")) == Color{1, 1, 0, 0.5});
+
+        REQUIRE(util.Run(MakeShader(R"(
+            MOV32I R0, 0x00000000;
+            MOV32I R1, 0x00000000;
+            MOV R2, RZ;
             MOV R3, RZ;
             MOV R4, c[2][0];
             MOV32I R5, 0x40400000;
