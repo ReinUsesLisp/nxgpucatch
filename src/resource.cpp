@@ -114,7 +114,10 @@ Image::Image(const dk::ImageLayoutMaker& layout_maker) {
     dk::ImageLayout image_layout;
     layout_maker.initialize(image_layout);
 
-    m_heap = dk::MemBlockMaker{layout_maker.device, static_cast<uint32_t>(image_layout.getSize())}
+    uint32_t size = static_cast<uint32_t>(image_layout.getSize());
+    size = size & -0x1000;
+
+    m_heap = dk::MemBlockMaker{layout_maker.device, size}
                  .setFlags(DkMemBlockFlags_CpuUncached | DkMemBlockFlags_GpuCached |
                            DkMemBlockFlags_ZeroFillInit | DkMemBlockFlags_Image)
                  .create();
