@@ -1,6 +1,7 @@
 #define CATCH_CONFIG_RUNNER
 #include <catch2/catch_all.hpp>
 
+#include <iostream>
 #include <switch.h>
 
 #include "device.h"
@@ -13,8 +14,16 @@ int main(int argc, char** argv) {
         argc = 1;
         argv = &dummy_argv0_ptr;
     }
+
     InitializeDevice();
+    std::streambuf* oldCoutStreamBuf = std::cout.rdbuf();
+    std::ostringstream strCout;
+    std::cout.rdbuf( strCout.rdbuf() );
     const int result{Catch::Session().run(argc, argv)};
+    std::string output = strCout.str();
+    fsOutputAccessLogToSdCard(output.c_str(), output.size());
+    std::cout.rdbuf( oldCoutStreamBuf );
+    std::cout << output;
     WaitForUserInput();
     return result;
 }
