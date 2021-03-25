@@ -48,12 +48,13 @@ public:
 class Texture {
 public:
     explicit Texture(uint32_t width, uint32_t height, uint32_t depth, uint32_t mips,
-                     DkImageType type, bool is_depth = false)
+                     DkImageType type, bool is_depth = false, DkMsMode ms = DkMsMode_1x)
         : m_image(dk::ImageLayoutMaker{device}
                       .setDimensions(width, height, depth)
                       .setType(type)
                       .setFormat(is_depth ? DkImageFormat_ZF32 : DkImageFormat_RGBA8_Unorm)
                       .setMipLevels(mips)
+                      .setMsMode(ms)
                       .setFlags(DkImageFlags_BlockLinear)),
           m_image_view{m_image.ImageHandle()}, m_width{width}, m_height{height}, m_depth{depth},
           m_type{type} {

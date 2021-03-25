@@ -72,7 +72,7 @@ void Randomize(Texture& texture, unsigned seed) {
     }
 }
 
-[[maybe_unused]] void RandomizeShadow(Texture& texture, unsigned seed) {
+void RandomizeShadow(Texture& texture, unsigned seed) {
     std::mt19937 rng{seed};
     const size_t size = texture.SizeBytes();
     auto data = static_cast<float*>(texture.CpuAddr());
