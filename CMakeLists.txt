@@ -93,6 +93,7 @@ add_executable(nxgpucatch
     src/tests/shader/tld4s.cpp
     src/tests/shader/tlds.cpp
     src/tests/shader/txq.cpp
+    src/tests/shader/vmad.cpp
     src/tests/shader/vote.cpp
     src/tests/shader/xmad.cpp
     src/wait_input.cpp
