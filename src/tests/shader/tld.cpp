@@ -59,7 +59,6 @@ void Randomize(Texture& texture, unsigned seed) {
     auto data = static_cast<uint8_t*>(texture.CpuAddr());
     for (size_t index = 0; index < size; ++index) {
         data[index] = rng() % 2 != 0 ? 255 : 0;
-        ++index;
     }
 }
 } // Anonymous namespace
@@ -71,8 +70,8 @@ TEST_CASE("TLD 1D", "[shader]") {
     Randomize(texture, 129034);
     Runner util{texture};
 
-    REQUIRE(X("MOV R0, 3; TLD.LZ PT, R0, R0, RZ, 0x28, 1D, 0xf;") == Color{0, 0, 1, 0});
-    REQUIRE(X("MOV R0, 17; TLD.LZ PT, R0, R0, RZ, 0x28, 1D, 0xf;") == Color{0, 0, 1, 0});
+    REQUIRE(X("MOV R0, 3; TLD.LZ PT, R0, R0, RZ, 0x28, 1D, 0xf;") == Color{0, 0, 0, 0});
+    REQUIRE(X("MOV R0, 17; TLD.LZ PT, R0, R0, RZ, 0x28, 1D, 0xf;") == Color{1, 0, 0, 1});
     REQUIRE(X("MOV R0, -1; TLD.LZ PT, R0, R0, RZ, 0x28, 1D, 0xf;") == Color{0, 0, 0, 0});
 }
 
@@ -81,9 +80,9 @@ TEST_CASE("TLD ARRAY_1D", "[shader]") {
     Randomize(texture, 129034);
     Runner util{texture};
 
-    REQUIRE(X("MOV R0, 3; MOV R1, 5; TLD.LZ PT, R0, R0, RZ, 0x28, ARRAY_1D, 0xf;") == Color{1, 0, 0, 0});
-    REQUIRE(X("MOV R0, 3; MOV R1, 6; TLD.LZ PT, R0, R0, RZ, 0x28, ARRAY_1D, 0xf;") == Color{1, 0, 1, 0});
-    REQUIRE(X("MOV R0, 3; MOV R1, 7; TLD.LZ PT, R0, R0, RZ, 0x28, ARRAY_1D, 0xf;") == Color{0, 0, 1, 0});
+    REQUIRE(X("MOV R0, 3; MOV R1, 5; TLD.LZ PT, R0, R0, RZ, 0x28, ARRAY_1D, 0xf;") == Color{1, 0, 0, 1});
+    REQUIRE(X("MOV R0, 3; MOV R1, 6; TLD.LZ PT, R0, R0, RZ, 0x28, ARRAY_1D, 0xf;") == Color{0, 1, 1, 1});
+    REQUIRE(X("MOV R0, 3; MOV R1, 7; TLD.LZ PT, R0, R0, RZ, 0x28, ARRAY_1D, 0xf;") == Color{0, 0, 0, 1});
 }
 
 TEST_CASE("TLD 2D", "[shader]") {
@@ -92,12 +91,12 @@ TEST_CASE("TLD 2D", "[shader]") {
     Runner util{texture};
 
     // clang-format off
-    REQUIRE(X("MOV R0, 3; MOV R1, 5; MOV R2, 4; TLD.LZ PT, R0, R0, RZ, 0x28, 2D, 0xf;") == Color{1, 0, 1, 0});
-    REQUIRE(X("MOV R0, 6; MOV R1, 7; MOV R2, 4; TLD.LZ PT, R0, R0, RZ, 0x28, 2D, 0xf;") == Color{0, 0, 0, 0});
-    REQUIRE(X("MOV R0, 4; MOV R1, 8; MOV R2, 4; TLD.LZ PT, R0, R0, RZ, 0x28, 2D, 0xf;") == Color{0, 0, 1, 0});
-    REQUIRE(X("MOV R0, 2; MOV R1, 1; MOV R2, 4; TLD.LZ PT, R0, R0, RZ, 0x28, 2D, 0xf;") == Color{0, 0, 0, 0});
+    REQUIRE(X("MOV R0, 3; MOV R1, 5; MOV R2, 4; TLD.LZ PT, R0, R0, RZ, 0x28, 2D, 0xf;") == Color{1, 0, 1, 1});
+    REQUIRE(X("MOV R0, 6; MOV R1, 7; MOV R2, 4; TLD.LZ PT, R0, R0, RZ, 0x28, 2D, 0xf;") == Color{1, 0, 0, 1});
+    REQUIRE(X("MOV R0, 4; MOV R1, 8; MOV R2, 4; TLD.LZ PT, R0, R0, RZ, 0x28, 2D, 0xf;") == Color{1, 1, 0, 1});
+    REQUIRE(X("MOV R0, 2; MOV R1, 1; MOV R2, 4; TLD.LZ PT, R0, R0, RZ, 0x28, 2D, 0xf;") == Color{0, 1, 1, 0});
 
-    REQUIRE(X("MOV R0, 2; MOV R1, 1; MOV R2, 3; TLD.LL PT, R0, R0, R2, 0x28, 2D, 0xf;") == Color{0, 0, 1, 0});
+    REQUIRE(X("MOV R0, 2; MOV R1, 1; MOV R2, 3; TLD.LL PT, R0, R0, R2, 0x28, 2D, 0xf;") == Color{1, 0, 1, 0});
     REQUIRE(X("MOV R0, 2; MOV R1, 1; MOV R2, 4; TLD.LL PT, R0, R0, R2, 0x28, 2D, 0xf;") == Color{1, 1, 1, 1});
     REQUIRE(X("MOV R0, 2; MOV R1, 1; MOV R2, 5; TLD.LL PT, R0, R0, R2, 0x28, 2D, 0xf;") == Color{1, 1, 1, 1});
     // clang-format on
@@ -110,9 +109,9 @@ TEST_CASE("TLD ARRAY_2D", "[shader]") {
 
     // clang-format off
     REQUIRE(X("MOV R0, 3; MOV R1, 5; MOV R2, 4; TLD.LZ PT, R0, R0, RZ, 0x28, ARRAY_2D, 0xf;") == Color{0, 0, 0, 0});
-    REQUIRE(X("MOV R0, 6; MOV R1, 7; MOV R2, 4; TLD.LZ PT, R0, R0, RZ, 0x28, ARRAY_2D, 0xf;") == Color{1, 0, 1, 0});
-    REQUIRE(X("MOV R0, 4; MOV R1, 8; MOV R2, 4; TLD.LZ PT, R0, R0, RZ, 0x28, ARRAY_2D, 0xf;") == Color{0, 0, 1, 0});
-    REQUIRE(X("MOV R0, 2; MOV R1, 1; MOV R2, 5; TLD.LZ PT, R0, R0, RZ, 0x28, ARRAY_2D, 0xf;") == Color{1, 0, 1, 0});
+    REQUIRE(X("MOV R0, 6; MOV R1, 7; MOV R2, 4; TLD.LZ PT, R0, R0, RZ, 0x28, ARRAY_2D, 0xf;") == Color{0, 0, 1, 0});
+    REQUIRE(X("MOV R0, 4; MOV R1, 8; MOV R2, 4; TLD.LZ PT, R0, R0, RZ, 0x28, ARRAY_2D, 0xf;") == Color{1, 1, 0, 1});
+    REQUIRE(X("MOV R0, 2; MOV R1, 1; MOV R2, 5; TLD.LZ PT, R0, R0, RZ, 0x28, ARRAY_2D, 0xf;") == Color{0, 0, 1, 0});
     // clang-format on
 }
 
@@ -122,10 +121,10 @@ TEST_CASE("TLD 3D", "[shader]") {
     Runner util{texture};
 
     // clang-format off
-    REQUIRE(X("MOV R0, 3; MOV R1, 5; MOV R2, 4; TLD.LZ PT, R0, R0, RZ, 0x28, 3D, 0xf;") == Color{1, 0, 0, 0});
-    REQUIRE(X("MOV R0, 6; MOV R1, 7; MOV R2, 4; TLD.LZ PT, R0, R0, RZ, 0x28, 3D, 0xf;") == Color{0, 0, 0, 0});
-    REQUIRE(X("MOV R0, 4; MOV R1, 8; MOV R2, 4; TLD.LZ PT, R0, R0, RZ, 0x28, 3D, 0xf;") == Color{1, 0, 0, 0});
-    REQUIRE(X("MOV R0, 2; MOV R1, 1; MOV R2, 5; TLD.LZ PT, R0, R0, RZ, 0x28, 3D, 0xf;") == Color{0, 0, 0, 0});
+    REQUIRE(X("MOV R0, 3; MOV R1, 5; MOV R2, 4; TLD.LZ PT, R0, R0, RZ, 0x28, 3D, 0xf;") == Color{0, 1, 0, 1});
+    REQUIRE(X("MOV R0, 6; MOV R1, 7; MOV R2, 4; TLD.LZ PT, R0, R0, RZ, 0x28, 3D, 0xf;") == Color{1, 0, 0, 0});
+    REQUIRE(X("MOV R0, 4; MOV R1, 8; MOV R2, 4; TLD.LZ PT, R0, R0, RZ, 0x28, 3D, 0xf;") == Color{0, 0, 1, 0});
+    REQUIRE(X("MOV R0, 2; MOV R1, 1; MOV R2, 5; TLD.LZ PT, R0, R0, RZ, 0x28, 3D, 0xf;") == Color{0, 1, 1, 0});
     // clang-format on
 }
 
@@ -135,11 +134,11 @@ TEST_CASE("TLD Mask", "[shader]") {
     Runner util{texture};
 
     REQUIRE(X("MOV R0, 3; MOV R1, 0; TLD.LZ PT, R0, R0, RZ, 0x28, 2D, 0x1;")[0] == 0);
-    REQUIRE(X("MOV R0, 3; MOV R1, 0; TLD.LZ PT, R0, R0, RZ, 0x28, 2D, 0x2;")[0] == 0);
-    REQUIRE(X("MOV R0, 3; MOV R1, 0; TLD.LZ PT, R0, R0, RZ, 0x28, 2D, 0x4;")[0] == 1);
-    REQUIRE(X("MOV R0, 3; MOV R1, 0; TLD.LZ PT, R0, R0, RZ, 0x28, 2D, 0x8;")[0] == 0);
+    REQUIRE(X("MOV R0, 3; MOV R1, 0; TLD.LZ PT, R0, R0, RZ, 0x28, 2D, 0x2;")[0] == 1);
+    REQUIRE(X("MOV R0, 3; MOV R1, 0; TLD.LZ PT, R0, R0, RZ, 0x28, 2D, 0x4;")[0] == 0);
+    REQUIRE(X("MOV R0, 3; MOV R1, 0; TLD.LZ PT, R0, R0, RZ, 0x28, 2D, 0x8;")[0] == 1);
 
-    REQUIRE(X("MOV R0, 3; MOV R1, 0; TLD.LZ PT, R0, R0, RZ, 0x28, 2D, 0x5;")[1] == 1);
+    REQUIRE(X("MOV R0, 3; MOV R1, 0; TLD.LZ PT, R0, R0, RZ, 0x28, 2D, 0x5;")[1] == 0);
 }
 
 TEST_CASE("TLD AOFFI", "[shader]") {
@@ -148,13 +147,13 @@ TEST_CASE("TLD AOFFI", "[shader]") {
     Runner util{texture};
 
     // clang-format off
-    REQUIRE(X("MOV R0, 32; MOV R1, 32; MOV R4, 0x00; TLD.LZ.AOFFI PT, R0, R0, R4, 0x28, 2D, 0xf;") == Color{1, 0, 1, 0});
+    REQUIRE(X("MOV R0, 32; MOV R1, 32; MOV R4, 0x00; TLD.LZ.AOFFI PT, R0, R0, R4, 0x28, 2D, 0xf;") == Color{0, 1, 0, 0});
     REQUIRE(X("MOV R0, 32; MOV R1, 32; MOV R4, 0xff; TLD.LZ.AOFFI PT, R0, R0, R4, 0x28, 2D, 0xf;") == Color{1, 0, 0, 0});
-    REQUIRE(X("MOV R0, 32; MOV R1, 32; MOV R4, 0x03; TLD.LZ.AOFFI PT, R0, R0, R4, 0x28, 2D, 0xf;") == Color{1, 0, 0, 0});
+    REQUIRE(X("MOV R0, 32; MOV R1, 32; MOV R4, 0x03; TLD.LZ.AOFFI PT, R0, R0, R4, 0x28, 2D, 0xf;") == Color{1, 0, 0, 1});
 
-    REQUIRE(X("MOV R0, 32; MOV R1, 32; MOV R4, 0; MOV R5, 0x03; TLD.LL.AOFFI PT, R0, R0, R4, 0x28, 2D, 0xf;") == Color{1, 0, 0, 0});
-    REQUIRE(X("MOV R0, 32; MOV R1, 32; MOV R4, 1; MOV R5, 0x03; TLD.LL.AOFFI PT, R0, R0, R4, 0x28, 2D, 0xf;") == Color{0, 0, 1, 0});
-    REQUIRE(X("MOV R0, 32; MOV R1, 32; MOV R4, 2; MOV R5, 0x03; TLD.LL.AOFFI PT, R0, R0, R4, 0x28, 2D, 0xf;") == Color{0, 0, 0, 0});
+    REQUIRE(X("MOV R0, 32; MOV R1, 32; MOV R4, 0; MOV R5, 0x03; TLD.LL.AOFFI PT, R0, R0, R4, 0x28, 2D, 0xf;") == Color{1, 0, 0, 1});
+    REQUIRE(X("MOV R0, 32; MOV R1, 32; MOV R4, 1; MOV R5, 0x03; TLD.LL.AOFFI PT, R0, R0, R4, 0x28, 2D, 0xf;") == Color{1, 1, 1, 0});
+    REQUIRE(X("MOV R0, 32; MOV R1, 32; MOV R4, 2; MOV R5, 0x03; TLD.LL.AOFFI PT, R0, R0, R4, 0x28, 2D, 0xf;") == Color{1, 0, 1, 0});
     // clang-format on
 }
 
@@ -164,9 +163,9 @@ TEST_CASE("TLD Bindless", "[shader]") {
     Runner util{texture};
 
     // clang-format off
-    REQUIRE(X("MOV R4, c[2][0]; MOV R0, 3; MOV R1, 5; TLD.B.LZ PT, R0, R0, R4, 0, ARRAY_1D, 0xf;") == Color{1, 0, 0, 0});
-    REQUIRE(X("MOV R4, c[2][0]; MOV R0, 3; MOV R1, 6; TLD.B.LZ PT, R0, R0, R4, 0, ARRAY_1D, 0xf;") == Color{1, 0, 1, 0});
-    REQUIRE(X("MOV R4, c[2][0]; MOV R0, 3; MOV R1, 7; TLD.B.LZ PT, R0, R0, R4, 0, ARRAY_1D, 0xf;") == Color{0, 0, 1, 0});
+    REQUIRE(X("MOV R4, c[2][0]; MOV R0, 3; MOV R1, 5; TLD.B.LZ PT, R0, R0, R4, 0, ARRAY_1D, 0xf;") == Color{1, 0, 0, 1});
+    REQUIRE(X("MOV R4, c[2][0]; MOV R0, 3; MOV R1, 6; TLD.B.LZ PT, R0, R0, R4, 0, ARRAY_1D, 0xf;") == Color{0, 1, 1, 1});
+    REQUIRE(X("MOV R4, c[2][0]; MOV R0, 3; MOV R1, 7; TLD.B.LZ PT, R0, R0, R4, 0, ARRAY_1D, 0xf;") == Color{0, 0, 0, 1});
     // clang-format on
 }
 
@@ -187,7 +186,7 @@ TEST_CASE("TLD Sparse", "[shader]") {
 }
 
 TEST_CASE("TLD Multisample", "[shader]") {
-    Texture texture(1024, 1024, 1, 1, DkImageType_2D, false, DkMsMode_8x);
+    Texture texture(64, 64, 1, 1, DkImageType_2DMS, false, DkMsMode_8x);
     Randomize(texture, 46);
     Runner util{texture};
 
@@ -197,7 +196,7 @@ TEST_CASE("TLD Multisample", "[shader]") {
         MOV R0, 3;
         MOV R1, 5;
         TLD.B.LZ.MS PT, R0, R0, R4, 0, 2D, 0xf;
-    )") == Color{0, 0, 1, 0});
+    )") == Color{1, 1, 0, 0});
 
     REQUIRE(X(R"(
         MOV R4, c[2][0];
@@ -205,5 +204,29 @@ TEST_CASE("TLD Multisample", "[shader]") {
         MOV R0, 3;
         MOV R1, 5;
         TLD.B.LZ.MS PT, R0, R0, R4, 0, 2D, 0xf;
-    )") == Color{0, 0, 0, 0});
+    )") == Color{0, 1, 1, 0});
+}
+
+TEST_CASE("TLD Multisample Array", "[shader]") {
+    Texture texture(64, 64, 4, 1, DkImageType_2DMSArray, false, DkMsMode_8x);
+    Randomize(texture, 46);
+    Runner util{texture};
+
+    REQUIRE(X(R"(
+        MOV R4, c[2][0];
+        MOV R5, 0;
+        MOV R0, 3;
+        MOV R1, 5;
+        MOV R2, 5;
+        TLD.B.LZ.MS PT, R0, R0, R4, 0, ARRAY_2D, 0xf;
+    )") == Color{1, 1, 1, 1});
+
+    REQUIRE(X(R"(
+        MOV R4, c[2][0];
+        MOV R5, 2;
+        MOV R0, 3;
+        MOV R1, 5;
+        MOV R2, 5;
+        TLD.B.LZ.MS PT, R0, R0, R4, 0, ARRAY_2D, 0xf;
+    )") == Color{0, 1, 1, 1});
 }
