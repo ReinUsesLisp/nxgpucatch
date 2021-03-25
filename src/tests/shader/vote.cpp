@@ -140,5 +140,6 @@ ISETP.GE.AND P0, PT, R3, 48, PT;
 VOTE.ALL R2, PT, PT;
 ISETP.EQ.AND P0, PT, R3, 32, PT;
 @P0 STG.E [R0], R2;
+EXIT;
     )") == 0xffff);
 }
