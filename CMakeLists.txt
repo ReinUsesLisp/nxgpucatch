@@ -99,7 +99,6 @@ add_executable(nxgpucatch
     src/tests/shader/xmad.cpp
     src/wait_input.cpp
     src/wait_input.h
-    src/xor_random.h
 )
 
 target_link_libraries(nxgpucatch switch::deko3d switch::libnx Catch2::Catch2 nxas_lib)
