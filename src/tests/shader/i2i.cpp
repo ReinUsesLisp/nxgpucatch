@@ -4,6 +4,11 @@
 
 using namespace EvalUtil;
 
+static constexpr int32_t VALUES[]{
+    -5,     16,    -140,   170,   -280,       260,         -5001,      5013,
+    -32820, 33767, -67535, 69535, 2000000000, -2000000000, 2147483647, -2147483648,
+};
+
 static uint32_t Run(uint32_t value, std::string code) {
     return EvalUtil::Run(".dksh compute\n"
                          "main:\n"
@@ -41,11 +46,7 @@ TEST_CASE("I2I Simple", "[shader]") {
     REQUIRE(Run(0xff, "I2I.S32.S8 R2, |R2|;") == 1);
     REQUIRE(Run(0xff, "I2I.S32.S8 R2, -R2;") == 1);
     REQUIRE(Run(0xff, "I2I.S32.S8 R2, -|R2|;") == 0xffffffff);
-    
-    static constexpr int32_t VALUES[]{
-        -5,     16,    -140,   170,   -280,       260,         -5001,      5013,
-        -32820, 33767, -67535, 69535, 2000000000, -2000000000, 2147483647, -2147483648,
-    };
+
     for (const int32_t value : VALUES) {
         // Destination sign only matters when saturating, so we skip testing that
         REQUIRE(EvalUnary<u32>("I2I.S8.S8", value) == Cast<s8, s8>(value));
@@ -68,5 +69,91 @@ TEST_CASE("I2I Simple", "[shader]") {
         REQUIRE(EvalUnary<u32>("I2I.S32.U16", value) == Cast<s32, u16>(value));
         REQUIRE(EvalUnary<u32>("I2I.S32.S32", value) == Cast<s32, s32>(value));
         REQUIRE(EvalUnary<u32>("I2I.S32.U32", value) == Cast<s32, u32>(value));
+    }
+}
+
+static u32 SignedSaturate(s32 value, u32 destination_width) {
+    const s32 sat = 1 << (destination_width - 1);
+    const s32 dest = std::clamp(value, -sat, sat - 1);
+    u32 ret{};
+    std::memcpy(&ret, &dest, sizeof(dest));
+    return ret;
+}
+
+static u32 SignedSaturate(u32 value, u32 destination_width) {
+    const u32 sat = 1 << (destination_width - 1);
+    const u32 dest = std::clamp<u32>(value, 0, sat - 1);
+    return dest;
+}
+
+static u32 UnsignedSaturate(s32 value, u32 destination_width) {
+    const u32 sat = (1 << destination_width) - 1;
+    const u32 unsigned_value = value < 0 ? 0u : static_cast<u32>(value);
+    return std::clamp(unsigned_value, 0u, sat);
+}
+
+static u32 UnsignedSaturate(u32 value, u32 destination_width) {
+    const u32 sat = (1 << destination_width) - 1;
+    return std::clamp(value, 0u, sat);
+}
+
+TEST_CASE("I2I Saturate Signed", "[shader]") {
+    for (const int32_t value : VALUES) {
+        const s8 s8_value{static_cast<s8>(value)};
+        const s16 s16_value{static_cast<s16>(value)};
+
+        REQUIRE(Run(value, "I2I.S8.S8.SAT R2, R2;") == SignedSaturate(s8_value, 8));
+        REQUIRE(Run(value, "I2I.S16.S8.SAT R2, R2;") == SignedSaturate(s8_value, 16));
+        REQUIRE(Run(value, "I2I.S32.S8.SAT R2, R2;") == SignedSaturate(s8_value, 32));
+
+        REQUIRE(Run(value, "I2I.S8.S16.SAT R2, R2;") == SignedSaturate(s16_value, 8));
+        REQUIRE(Run(value, "I2I.S16.S16.SAT R2, R2;") == SignedSaturate(s16_value, 16));
+        REQUIRE(Run(value, "I2I.S32.S16.SAT R2, R2;") == SignedSaturate(s16_value, 32));
+
+        REQUIRE(Run(value, "I2I.S8.S32.SAT R2, R2;") == SignedSaturate(value, 8));
+        REQUIRE(Run(value, "I2I.S16.S32.SAT R2, R2;") == SignedSaturate(value, 16));
+        REQUIRE(Run(value, "I2I.S32.S32.SAT R2, R2;") == SignedSaturate(value, 32));
+    }
+}
+
+TEST_CASE("I2I Saturate Unsigned", "[shader]") {
+    for (const int32_t value : VALUES) {
+        const u8 u8_value{static_cast<u8>(value)};
+        const u16 u16_value{static_cast<u16>(value)};
+        const u32 u32_value{static_cast<u32>(value)};
+
+        REQUIRE(Run(value, "I2I.U8.U8.SAT R2, R2;") == UnsignedSaturate(u8_value, 8));
+        REQUIRE(Run(value, "I2I.U16.U8.SAT R2, R2;") == UnsignedSaturate(u8_value, 16));
+        REQUIRE(Run(value, "I2I.U32.U8.SAT R2, R2;") == UnsignedSaturate(u8_value, 32));
+
+        REQUIRE(Run(value, "I2I.U8.U16.SAT R2, R2;") == UnsignedSaturate(u16_value, 8));
+        REQUIRE(Run(value, "I2I.U16.U16.SAT R2, R2;") == UnsignedSaturate(u16_value, 16));
+        REQUIRE(Run(value, "I2I.U32.U16.SAT R2, R2;") == UnsignedSaturate(u16_value, 32));
+
+        REQUIRE(Run(value, "I2I.U8.U32.SAT R2, R2;") == UnsignedSaturate(u32_value, 8));
+        REQUIRE(Run(value, "I2I.U16.U32.SAT R2, R2;") == UnsignedSaturate(u32_value, 16));
+        REQUIRE(Run(value, "I2I.U32.U32.SAT R2, R2;") == UnsignedSaturate(u32_value, 32));
+    }
+}
+
+TEST_CASE("I2I Saturate Mixed", "[shader]") {
+    for (const int32_t s32_value : VALUES) {
+        const s8 s8_value{static_cast<s8>(s32_value)};
+        const s16 s16_value{static_cast<s16>(s32_value)};
+        const u8 u8_value{static_cast<u8>(s32_value)};
+        const u16 u16_value{static_cast<u16>(s32_value)};
+        const u32 u32_value{static_cast<u32>(s32_value)};
+
+        REQUIRE(Run(u32_value, "I2I.S8.U8.SAT R2, R2;") == SignedSaturate(u8_value, 8));
+        REQUIRE(Run(u32_value, "I2I.U16.S8.SAT R2, R2;") == UnsignedSaturate(s8_value, 16));
+        REQUIRE(Run(u32_value, "I2I.S32.U8.SAT R2, R2;") == SignedSaturate(u8_value, 32));
+
+        REQUIRE(Run(u32_value, "I2I.U8.S16.SAT R2, R2;") == UnsignedSaturate(s16_value, 8));
+        REQUIRE(Run(u32_value, "I2I.S16.U16.SAT R2, R2;") == SignedSaturate(u16_value, 16));
+        REQUIRE(Run(u32_value, "I2I.U32.S16.SAT R2, R2;") == UnsignedSaturate(s16_value, 32));
+
+        REQUIRE(Run(u32_value, "I2I.S8.U32.SAT R2, R2;") == SignedSaturate(u32_value, 8));
+        REQUIRE(Run(u32_value, "I2I.U16.S32.SAT R2, R2;") == UnsignedSaturate(s32_value, 16));
+        REQUIRE(Run(u32_value, "I2I.S32.U32.SAT R2, R2;") == SignedSaturate(u32_value, 32));
     }
 }
