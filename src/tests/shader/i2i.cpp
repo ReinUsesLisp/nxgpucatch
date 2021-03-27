@@ -157,3 +157,25 @@ TEST_CASE("I2I Saturate Mixed", "[shader]") {
         REQUIRE(Run(u32_value, "I2I.S32.U32.SAT R2, R2;") == SignedSaturate(u32_value, 32));
     }
 }
+
+TEST_CASE("I2I CC", "[shader]") {
+    // 1 - Zero
+    // 2 - Sign
+    // 4 - Carry
+    // 8 - Overflow
+    // I2I ops can only set the Zero and Sign bits.
+    REQUIRE(Run(0xffff0000, "I2I.S8.S32 RZ.CC, R2; P2R R2, CC, RZ, 0xff;") == 1);
+    REQUIRE(Run(0xffff0000, "I2I.S16.S32 RZ.CC, R2; P2R R2, CC, RZ, 0xff;") == 1);
+    REQUIRE(Run(12 - 12, "I2I.S32.S32 RZ.CC, R2; P2R R2, CC, RZ, 0xff;") == 1);
+    REQUIRE(Run(0xffff0000, "I2I.U8.S32 RZ.CC, R2; P2R R2, CC, RZ, 0xff;") == 1);
+    REQUIRE(Run(0xffff0000, "I2I.U16.S32 RZ.CC, R2; P2R R2, CC, RZ, 0xff;") == 1);
+    REQUIRE(Run(12 - 12, "I2I.U32.S32 RZ.CC, R2; P2R R2, CC, RZ, 0xff;") == 1);
+    REQUIRE(Run(0xfffffff7, "I2I.U8.S32.SAT RZ.CC, R2; P2R R2, CC, RZ, 0xff;") == 1);
+    REQUIRE(Run(0xfffffff7, "I2I.U16.S32.SAT RZ.CC, R2; P2R R2, CC, RZ, 0xff;") == 1);
+    REQUIRE(Run(0xfffffff7, "I2I.U32.S32.SAT RZ.CC, R2; P2R R2, CC, RZ, 0xff;") == 1);
+
+    // Sign bit only set with 32-bit wide results
+    REQUIRE(Run(0xffff0000, "I2I.S32.S32 RZ.CC, R2; P2R R2, CC, RZ, 0xff;") == 2);
+    REQUIRE(Run(0xffffffff, "I2I.U32.S32 RZ.CC, R2; P2R R2, CC, RZ, 0xff;") == 2);
+    REQUIRE(Run(0xffffffff, "I2I.U32.U32 RZ.CC, R2; P2R R2, CC, RZ, 0xff;") == 2);
+}
