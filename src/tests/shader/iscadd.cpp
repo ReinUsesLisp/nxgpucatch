@@ -34,6 +34,8 @@ TEST_CASE("ISCADD Negate", "[shader]") {
 TEST_CASE("ISCADD CC", "[shader]") {
     REQUIRE(Run(1, "ISCADD RZ.CC, RZ, RZ, 0;"
                    "P2R R2, CC, RZ, 0xff;") == 1);
+    REQUIRE(Run(1, "ISCADD RZ.CC, RZ, RZ, 16;"
+                   "P2R R2, CC, RZ, 0xff;") == 1);
     REQUIRE(Run(1, "ISCADD RZ.CC, RZ, -1, 0;"
                    "P2R R2, CC, RZ, 0xff;") == 2);
     REQUIRE(Run(1, "ISCADD R2, RZ, -1, 0;"
@@ -50,6 +52,11 @@ TEST_CASE("ISCADD CC", "[shader]") {
     REQUIRE(Run(1, "MOV32I R2, 0xffffffff;"
                    "ISCADD RZ.CC, R2, 2, 1;"
                    "P2R R2, CC, RZ, 0xff;") == 5);
+    // Sign from the shift
+    REQUIRE(Run(1, "MOV32I R2, 1;"
+                   "ISCADD RZ.CC, R2, 0, 31;"
+                   "P2R R2, CC, RZ, 0xff;") == 2);
+
 }
 
 TEST_CASE("ISCADD PO", "[shader]") {
