@@ -56,12 +56,30 @@ TEST_CASE("ISCADD CC", "[shader]") {
     REQUIRE(Run(1, "MOV32I R2, 1;"
                    "ISCADD RZ.CC, R2, 0, 31;"
                    "P2R R2, CC, RZ, 0xff;") == 2);
-
+    // Shift Zero
+    REQUIRE(Run(1, "MOV32I R2, 4;"
+                   "ISCADD RZ.CC, R2, 0, 31;"
+                   "P2R R2, CC, RZ, 0xff;") == 1);
+    // PO carry
+    REQUIRE(Run(1, "MOV32I R2, 0xffffffff;"
+                   "ISCADD.PO RZ.CC, R2, 2, 0;"
+                   "P2R R2, CC, RZ, 0xff;") == 4);
+    // PO overflow
+    REQUIRE(Run(1, "MOV32I R2, 0x7fffffff;"
+                   "ISCADD.PO RZ.CC, R2, 2, 0;"
+                   "P2R R2, CC, RZ, 0xff;") == 10);
+    REQUIRE(Run(1, "MOV32I R2, 1;"
+                   "MOV32I R3, 0xffffffff;"
+                   "ISCADD.PO RZ.CC, R2, R3, 0;"
+                   "P2R R2, CC, RZ, 0xff;") == 4);
 }
 
 TEST_CASE("ISCADD PO", "[shader]") {
     REQUIRE(Run(1, "MOV32I R2, 0xffffffff;"
                    "ISCADD.PO R2.CC, R2, 0, 1;") == 0xffff'ffff);
+    REQUIRE(Run(1, "MOV32I R2, 1;"
+                   "MOV32I R3, 0xffffffff;"
+                   "ISCADD.PO R2.CC, R2, R3, 0;") == 1);
 }
 
 // TODO: Test CC + P0
