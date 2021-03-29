@@ -40,3 +40,19 @@ TEST_CASE("IADD3 Simple", "[shader]") {
     REQUIRE(Run(4, 5, 6, "IADD3 R2, R2, c[2][4], R4;") == 15);
     REQUIRE(Run(4, 5, 6, "IADD3 R2, R2, 5, R4;") == 15);
 }
+
+TEST_CASE("IADD3 CC", "[shader]") {
+    REQUIRE(Run(0, 0, 0, "IADD3 RZ.CC, R2, R3, R4; P2R R2, CC, RZ, 0xff;") == 1); // Zero
+    REQUIRE(Run(-2, 1, 1, "IADD3 RZ.CC, R2, R3, R4; P2R R2, CC, RZ, 0xff;") == 5); // Zero+Carry
+    REQUIRE(Run(1, -1, 0, "IADD3 RZ.CC, R2, R3, R4; P2R R2, CC, RZ, 0xff;") == 9); // Zero+Overflow
+    REQUIRE(Run(-1, 0, 0, "IADD3 RZ.CC, R2, R3, R4; P2R R2, CC, RZ, 0xff;") == 2); // Sign
+    REQUIRE(Run(0, -1, 0, "IADD3 RZ.CC, R2, R3, R4; P2R R2, CC, RZ, 0xff;") == 2); // Sign
+    REQUIRE(Run(0, 0, -1, "IADD3 RZ.CC, R2, R3, R4; P2R R2, CC, RZ, 0xff;") == 2); // Sign
+    REQUIRE(Run(-1, 2, 0, "IADD3 RZ.CC, R2, R3, R4; P2R R2, CC, RZ, 0xff;") == 8); // Overflow
+    REQUIRE(Run(1, -1, 1, "IADD3 RZ.CC, R2, R3, R4; P2R R2, CC, RZ, 0xff;") == 8); // Overflow
+    REQUIRE(Run(0, 2, -1, "IADD3 RZ.CC, R2, R3, R4; P2R R2, CC, RZ, 0xff;") == 4); // Carry
+
+    // Shifts
+    REQUIRE(Run(2, 2, 0, "IADD3.LS RZ.CC, R2, R3, R4; P2R R2, CC, RZ, 0xff;") == 1); // Zero
+    REQUIRE(Run(0x8000, 2, 1, "IADD3.RS RZ.CC, R2, R3, R4; P2R R2, CC, RZ, 0xff;") == 2); // Sign
+}

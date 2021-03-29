@@ -36,6 +36,8 @@ TEST_CASE("IADD CC", "[shader]") {
     REQUIRE(Run(1, "IADD R2, RZ, -1; IADD RZ.CC, R2, 2; P2R R2, CC, RZ, 0xff;") == 4); // Carry
     REQUIRE(Run(1, "MOV32I R2, 0x7fffffff;"
                    "IADD RZ.CC, R2, 2; P2R R2, CC, RZ, 0xff;") == 10); // Overflow
+    REQUIRE(Run(1, "MOV32I R2, 1;"
+                   "IADD RZ.CC, R2, -1; P2R R2, CC, RZ, 0xff;") == 5); // Zero+Carry
 }
 
 TEST_CASE("IADD X", "[shader]") {
