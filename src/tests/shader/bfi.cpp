@@ -33,3 +33,12 @@ TEST_CASE("BFI Undefined", "[shader][undefined]") {
     REQUIRE(Run(0xcccccccc, 0xcafe, 8, 64, "BFI R2, R2, R3, R4;") == 0x00cafecc);
     REQUIRE(Run(0xcccccccc, 0xcafe, 32, 32, "BFI R2, R2, R3, R4;") == 0xcccccccc);
 }
+
+TEST_CASE("BFI CC", "[shader]") {
+    REQUIRE(Run(0x00cccccc, 0xcafe, 8, 0, "BFI RZ.CC, R2, R3, R4; P2R R2, CC, RZ, 0xff;") == 0); // No CC's written
+    REQUIRE(Run(0xcccccccc, 0xcafe, 8, 64, "BFI RZ.CC, R2, R3, R4; P2R R2, CC, RZ, 0xff;") == 0); // No CC's written
+    REQUIRE(Run(0xcccccccc, 0, 0, 32, "BFI RZ.CC, R2, R3, R4; P2R R2, CC, RZ, 0xff;") == 1); // Zero
+    REQUIRE(Run(0xcafe, 0, 0, 16, "BFI RZ.CC, R2, R3, R4; P2R R2, CC, RZ, 0xff;") == 1);     // Zero
+    REQUIRE(Run(0x00cccccc, 0xcc, 28, 4, "BFI RZ.CC, R2, R3, R4; P2R R2, CC, RZ, 0xff;") == 2);  // Sign
+    REQUIRE(Run(0xcccccccc, 0xcafe, 8, 0, "BFI RZ.CC, R2, R3, R4; P2R R2, CC, RZ, 0xff;") == 2); // Sign
+}

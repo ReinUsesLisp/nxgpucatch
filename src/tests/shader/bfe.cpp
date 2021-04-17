@@ -43,3 +43,11 @@ TEST_CASE("BFE Undefined", "[shader][undefined]") {
     REQUIRE(Run(0x80000000, 0, 0x100, "BFE.S32 R2, R2, R3;") == 0);
     REQUIRE(Run(0x80000000, 0, 0xff, "BFE.S32 R2, R2, R3;") == 0x80000000);
 }
+
+TEST_CASE("BFE CC", "[shader]") {
+    REQUIRE(Run(0xdead, 8, 16, "BFE.U32 RZ.CC, R2, R3; P2R R2, CC, RZ, 0xff;") == 0); // No CC's written
+    REQUIRE(Run(0xdead, 16, 16, "BFE.U32 RZ.CC, R2, R3; P2R R2, CC, RZ, 0xff;") == 1); // Zero
+    REQUIRE(Run(0xdead, 8, 0, "BFE.U32 RZ.CC, R2, R3; P2R R2, CC, RZ, 0xff;") == 1);   // Zero
+    REQUIRE(Run(0xdead0000, 24, 16, "BFE.S32 RZ.CC, R2, R3; P2R R2, CC, RZ, 0xff;") == 2); // Sign
+    REQUIRE(Run(1, 32, 1, "BFE.S32.BREV RZ.CC, R2, R3; P2R R2, CC, RZ, 0xff;") == 2);      // Sign
+}
