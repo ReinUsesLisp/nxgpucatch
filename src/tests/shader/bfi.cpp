@@ -20,6 +20,7 @@ static uint32_t Run(uint32_t base, uint32_t insert, uint32_t offset, uint32_t co
 TEST_CASE("BFI Simple", "[shader]") {
     REQUIRE(Run(0xcccccccc, 0, 8, 8, "BFI R2, R2, R3, R4;") == 0xcccc00cc);
     REQUIRE(Run(0xcccccccc, 0, 4, 8, "BFI R2, R2, R3, R4;") == 0xccccc00c);
+    REQUIRE(Run(0xcccccccc, 0, 0, 32, "BFI R2, R2, R3, R4;") == 0);
     REQUIRE(Run(0xcccccccc, 0xffdd, 12, 8, "BFI R2, R2, R3, R4;") == 0xcccddccc);
     REQUIRE(Run(0xcccccc32, 0xffdd, 12, 8, "BFI R2, R2, R3, R4;") == 0xcccddc32);
 
