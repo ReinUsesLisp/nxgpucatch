@@ -72,3 +72,88 @@ TEST_CASE("ISET Combining", "[shader]") {
 TEST_CASE("ISET BF", "[shader]") {
     REQUIRE(Run(0, "ISET.BF.EQ.AND R2, R4, R4, PT;") == 0x3f80'0000);
 }
+
+TEST_CASE("ISET X", "[shader]") {
+    // Simple
+    REQUIRE(Run(0, "ISET.LT.U32.X.AND R2, R4, R3, PT;") == -1);
+    REQUIRE(Run(0, "ISET.EQ.U32.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, "ISET.LE.U32.X.AND R2, R4, R3, PT;") == -1);
+    REQUIRE(Run(0, "ISET.GT.U32.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, "ISET.NE.U32.X.AND R2, R4, R3, PT;") == -1);
+    REQUIRE(Run(0, "ISET.GE.U32.X.AND R2, R4, R3, PT;") == 0);
+
+    REQUIRE(Run(0, "ISET.LT.S32.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, "ISET.EQ.S32.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, "ISET.LE.S32.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, "ISET.GT.S32.X.AND R2, R4, R3, PT;") == -1);
+    REQUIRE(Run(0, "ISET.NE.S32.X.AND R2, R4, R3, PT;") == -1);
+    REQUIRE(Run(0, "ISET.GE.S32.X.AND R2, R4, R3, PT;") == -1);
+    
+    const std::string flags_unset = "IADD R2, RZ, -1; IADD RZ.CC, R2, 0; ";
+    const std::string zero_set = "IADD R2, RZ, 0; IADD RZ.CC, R2, 0; ";
+    const std::string carry_set = "IADD R2, RZ, -1; IADD RZ.CC, R2, 2; ";
+    const std::string carry_zero_set = "IADD R2, RZ, -1; IADD RZ.CC, R2, 1; ";
+
+    const std::string zero_extend = "MOV R3, 74; ";
+    const std::string negative_extend = "MOV R3, 75; ";
+
+    // No flags set
+    REQUIRE(Run(0, zero_extend + flags_unset + "ISET.LT.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, zero_extend + flags_unset + "ISET.EQ.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, zero_extend + flags_unset + "ISET.LE.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, zero_extend + flags_unset + "ISET.GT.X.AND R2, R4, R3, PT;") == -1);
+    REQUIRE(Run(0, zero_extend + flags_unset + "ISET.NE.X.AND R2, R4, R3, PT;") == -1);
+    REQUIRE(Run(0, zero_extend + flags_unset + "ISET.GE.X.AND R2, R4, R3, PT;") == -1);
+
+    REQUIRE(Run(0, negative_extend + flags_unset + "ISET.LT.X.AND R2, R4, R3, PT;") == -1);
+    REQUIRE(Run(0, negative_extend + flags_unset + "ISET.EQ.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, negative_extend + flags_unset + "ISET.LE.X.AND R2, R4, R3, PT;") == -1);
+    REQUIRE(Run(0, negative_extend + flags_unset + "ISET.GT.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, negative_extend + flags_unset + "ISET.NE.X.AND R2, R4, R3, PT;") == -1);
+    REQUIRE(Run(0, negative_extend + flags_unset + "ISET.GE.X.AND R2, R4, R3, PT;") == 0);
+
+    // Zero flag set
+    REQUIRE(Run(0, zero_extend + zero_set + "ISET.LT.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, zero_extend + zero_set + "ISET.EQ.X.AND R2, R4, R3, PT;") == -1);
+    REQUIRE(Run(0, zero_extend + zero_set + "ISET.LE.X.AND R2, R4, R3, PT;") == -1);
+    REQUIRE(Run(0, zero_extend + zero_set + "ISET.GT.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, zero_extend + zero_set + "ISET.NE.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, zero_extend + zero_set + "ISET.GE.X.AND R2, R4, R3, PT;") == -1);
+
+    REQUIRE(Run(0, negative_extend + zero_set + "ISET.LT.X.AND R2, R4, R3, PT;") == -1);
+    REQUIRE(Run(0, negative_extend + zero_set + "ISET.EQ.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, negative_extend + zero_set + "ISET.LE.X.AND R2, R4, R3, PT;") == -1);
+    REQUIRE(Run(0, negative_extend + zero_set + "ISET.GT.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, negative_extend + zero_set + "ISET.NE.X.AND R2, R4, R3, PT;") == -1);
+    REQUIRE(Run(0, negative_extend + zero_set + "ISET.GE.X.AND R2, R4, R3, PT;") == 0);
+
+    // Carry flag set
+    REQUIRE(Run(0, zero_extend + carry_set + "ISET.LT.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, zero_extend + carry_set + "ISET.EQ.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, zero_extend + carry_set + "ISET.LE.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, zero_extend + carry_set + "ISET.GT.X.AND R2, R4, R3, PT;") == -1);
+    REQUIRE(Run(0, zero_extend + carry_set + "ISET.NE.X.AND R2, R4, R3, PT;") == -1);
+    REQUIRE(Run(0, zero_extend + carry_set + "ISET.GE.X.AND R2, R4, R3, PT;") == -1);
+
+    REQUIRE(Run(0, negative_extend + carry_set + "ISET.LT.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, negative_extend + carry_set + "ISET.EQ.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, negative_extend + carry_set + "ISET.LE.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, negative_extend + carry_set + "ISET.GT.X.AND R2, R4, R3, PT;") == -1);
+    REQUIRE(Run(0, negative_extend + carry_set + "ISET.NE.X.AND R2, R4, R3, PT;") == -1);
+    REQUIRE(Run(0, negative_extend + carry_set + "ISET.GE.X.AND R2, R4, R3, PT;") == -1);
+
+    // Carry+Zero flag set
+    REQUIRE(Run(0, zero_extend + carry_zero_set + "ISET.LT.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, zero_extend + carry_zero_set + "ISET.EQ.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, zero_extend + carry_zero_set + "ISET.LE.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, zero_extend + carry_zero_set + "ISET.GT.X.AND R2, R4, R3, PT;") == -1);
+    REQUIRE(Run(0, zero_extend + carry_zero_set + "ISET.NE.X.AND R2, R4, R3, PT;") == -1);
+    REQUIRE(Run(0, zero_extend + carry_zero_set + "ISET.GE.X.AND R2, R4, R3, PT;") == -1);
+
+    REQUIRE(Run(0, negative_extend + carry_zero_set + "ISET.LT.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, negative_extend + carry_zero_set + "ISET.EQ.X.AND R2, R4, R3, PT;") == -1);
+    REQUIRE(Run(0, negative_extend + carry_zero_set + "ISET.LE.X.AND R2, R4, R3, PT;") == -1);
+    REQUIRE(Run(0, negative_extend + carry_zero_set + "ISET.GT.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, negative_extend + carry_zero_set + "ISET.NE.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, negative_extend + carry_zero_set + "ISET.GE.X.AND R2, R4, R3, PT;") == -1);
+}
