@@ -74,21 +74,6 @@ TEST_CASE("ISET BF", "[shader]") {
 }
 
 TEST_CASE("ISET X", "[shader]") {
-    // Simple
-    REQUIRE(Run(0, "ISET.LT.U32.X.AND R2, R4, R3, PT;") == -1);
-    REQUIRE(Run(0, "ISET.EQ.U32.X.AND R2, R4, R3, PT;") == 0);
-    REQUIRE(Run(0, "ISET.LE.U32.X.AND R2, R4, R3, PT;") == -1);
-    REQUIRE(Run(0, "ISET.GT.U32.X.AND R2, R4, R3, PT;") == 0);
-    REQUIRE(Run(0, "ISET.NE.U32.X.AND R2, R4, R3, PT;") == -1);
-    REQUIRE(Run(0, "ISET.GE.U32.X.AND R2, R4, R3, PT;") == 0);
-
-    REQUIRE(Run(0, "ISET.LT.S32.X.AND R2, R4, R3, PT;") == 0);
-    REQUIRE(Run(0, "ISET.EQ.S32.X.AND R2, R4, R3, PT;") == 0);
-    REQUIRE(Run(0, "ISET.LE.S32.X.AND R2, R4, R3, PT;") == 0);
-    REQUIRE(Run(0, "ISET.GT.S32.X.AND R2, R4, R3, PT;") == -1);
-    REQUIRE(Run(0, "ISET.NE.S32.X.AND R2, R4, R3, PT;") == -1);
-    REQUIRE(Run(0, "ISET.GE.S32.X.AND R2, R4, R3, PT;") == -1);
-    
     const std::string flags_unset = "IADD R2, RZ, -1; IADD RZ.CC, R2, 0; ";
     const std::string zero_set = "IADD R2, RZ, 0; IADD RZ.CC, R2, 0; ";
     const std::string carry_set = "IADD R2, RZ, -1; IADD RZ.CC, R2, 2; ";
@@ -96,7 +81,23 @@ TEST_CASE("ISET X", "[shader]") {
 
     const std::string zero_extend = "MOV R3, 74; ";
     const std::string negative_extend = "MOV R3, 75; ";
-
+    
+    // Simple
+    // TODO: These fail in hades due to the flags not being set by a prior instruction
+    REQUIRE(Run(0, flags_unset + "ISET.LT.U32.X.AND R2, R4, R3, PT;") == -1);
+    REQUIRE(Run(0, flags_unset + "ISET.EQ.U32.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, flags_unset + "ISET.LE.U32.X.AND R2, R4, R3, PT;") == -1);
+    REQUIRE(Run(0, flags_unset + "ISET.GT.U32.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, flags_unset + "ISET.NE.U32.X.AND R2, R4, R3, PT;") == -1);
+    REQUIRE(Run(0, flags_unset + "ISET.GE.U32.X.AND R2, R4, R3, PT;") == 0);
+    
+    REQUIRE(Run(0, flags_unset + "ISET.LT.S32.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, flags_unset + "ISET.EQ.S32.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, flags_unset + "ISET.LE.S32.X.AND R2, R4, R3, PT;") == 0);
+    REQUIRE(Run(0, flags_unset + "ISET.GT.S32.X.AND R2, R4, R3, PT;") == -1);
+    REQUIRE(Run(0, flags_unset + "ISET.NE.S32.X.AND R2, R4, R3, PT;") == -1);
+    REQUIRE(Run(0, flags_unset + "ISET.GE.S32.X.AND R2, R4, R3, PT;") == -1);
+    
     // No flags set
     REQUIRE(Run(0, zero_extend + flags_unset + "ISET.LT.X.AND R2, R4, R3, PT;") == 0);
     REQUIRE(Run(0, zero_extend + flags_unset + "ISET.EQ.X.AND R2, R4, R3, PT;") == 0);
