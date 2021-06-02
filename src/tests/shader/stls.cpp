@@ -154,4 +154,19 @@ TEST_CASE("STL LDL STS LDS Simple", "[shader]") {
         STL.S8 [R0-1], R1;
         LDL.S8 R0, [R0-1];
     )", 3) == 0xfffffffe);
+
+    REQUIRE(Run(R"(
+        MOV32I R1, 0x33557799;
+        STL [RZ], R1;
+        LDL.U8 R0, [RZ];
+        LDL.U8 R1, [RZ+1];
+        LDL.U8 R2, [RZ+2];
+        LDL.U8 R3, [RZ+3];
+        SHL R1, R1, 8;
+        SHL R2, R2, 16;
+        SHL R3, R3, 24;
+        IADD R0, R0, R1;
+        IADD R0, R0, R2;
+        IADD R0, R0, R3;
+    )") == 0x33557799);
 }
