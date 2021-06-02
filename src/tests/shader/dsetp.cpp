@@ -11,8 +11,9 @@ static int32_t Run(double a, double b, std::string code) {
                                   "MOV R3, c[2][12];" +
                                       code +
                                       "MOV R0, RZ;"
-                                      "@P0 IADD R0, R0, 0x0f;"
-                                      "@P1 IADD R0, R0, 0xf0;"
+                                      "SEL R0, RZ, 0x0f, !P0;"
+                                      "SEL R1, RZ, 0xf0, !P1;"
+                                      "IADD R0, R0, R1;"
                                       "MOV R2, c[0x0][0x140];"
                                       "MOV R3, c[0x0][0x144];"
                                       "STG.E [R2], R0;\n"
