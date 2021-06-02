@@ -27,7 +27,10 @@ add_executable(nxgpucatch
     src/shader.cpp
     src/shader.h
     src/tests/clear.cpp
+    src/tests/indirect_compute.cpp
     src/tests/render_formats.cpp
+    src/tests/render_linear_aliased.cpp
+    src/tests/texture_buffer.cpp
     src/tests/shader/atom.cpp
     src/tests/shader/atoms.cpp
     src/tests/shader/bfe.cpp
@@ -86,6 +89,7 @@ add_executable(nxgpucatch
     src/tests/shader/shr.cpp
     src/tests/shader/stg.cpp
     src/tests/shader/stls.cpp
+    src/tests/shader/suldst.cpp
     src/tests/shader/tex.cpp
     src/tests/shader/texs.cpp
     src/tests/shader/tld.cpp
