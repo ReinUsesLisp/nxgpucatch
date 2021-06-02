@@ -1,10 +1,10 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "cmd_util.h"
+#include "descriptor_set.h"
 #include "heap.h"
 #include "resource.h"
 #include "shader.h"
-#include "descriptor_set.h"
 
 namespace {
 using Color = std::array<float, 4>;
@@ -365,4 +365,39 @@ TEST_CASE("TEX Cube Array DC", "[shader]") {
         MOV32I R4, 0x3f800000;
         TEX.LZ.DC PT, R0, R0, R4, 0x28, ARRAY_CUBE, 0xf;
     )")) == Color{0, 0, 0, 1});
+}
+
+TEST_CASE("TEX 2D array regular conversion") {
+    static constexpr uint8_t COLORS[3][4]{
+        {255, 0, 0, 255},
+        {0, 255, 0, 255},
+        {0, 0, 255, 255},
+    };
+    Texture texture(512, 512, 6, 1, DkImageType_2DArray);
+    uint8_t* colors = static_cast<uint8_t*>(texture.GetImage().Heap().getCpuAddr());
+    for (size_t c = 0; c < std::size(COLORS); ++c) {
+        for (int i = 0; i < 512 * 512; ++i) {
+            colors[0] = COLORS[c][0];
+            colors[1] = COLORS[c][1];
+            colors[2] = COLORS[c][2];
+            colors[3] = COLORS[c][3];
+            colors += 4;
+        }
+    }
+    Runner util{texture};
+    REQUIRE(util.Run(MakeShader(R"(
+        MOV32I R0, 0x3f800000;
+        MOV32I R1, 0x3f000000;
+        MOV32I R2, 0x3f000000;
+        F2I.FTZ.U16.F32 R0, R0;
+        TEX.LZ PT, R0, R0, RZ, 0x28, ARRAY_2D, 0xf;
+    )")) == Color{0, 1, 0, 1});
+
+    REQUIRE(util.Run(MakeShader(R"(
+        MOV32I R0, 0x40000000;
+        MOV32I R1, 0x3f000000;
+        MOV32I R2, 0x3f000000;
+        F2I.FTZ.U16.F32 R0, R0;
+        TEX.LZ PT, R0, R0, RZ, 0x28, ARRAY_2D, 0xf;
+    )")) == Color{0, 0, 1, 1});
 }
