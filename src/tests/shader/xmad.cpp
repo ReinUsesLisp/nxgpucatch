@@ -95,3 +95,10 @@ TEST_CASE("XMAD MRG", "[shader]") {
     REQUIRE(FuzzRun("XMAD.CLO.MRG R2, R2, c[2][0], R4;", 0x58238134) == 0x81340eaa);
     REQUIRE(FuzzRun("XMAD.CHI.MRG R2, R2, c[2][0], R4;", 0x58238134) == 0x81349983);
 }
+
+TEST_CASE("XMAD UE4", "[shader]") {
+    REQUIRE(FuzzRun("XMAD.PSL.CBCC R2, R2.H1, R3.H1, R4;", 0x58238134) == 0xf196064a);
+    REQUIRE(FuzzRun("XMAD R2, R2, c[2][0], R3;", 0x58238134) == 0xb5c8d183);
+    REQUIRE(FuzzRun("XMAD.MRG R2, R2, c[2][0].H1, RZ;", 0x58238134) == 0x81341268);
+    REQUIRE(FuzzRun("XMAD.PSL.CBCC R2, R2.H1, R3.H1, R4;") == 0xf196064a);
+}
