@@ -30,7 +30,7 @@ TEST_CASE("Render linear R32 sample R8 SUST", "[texture_buffer]") {
         .setFlags(DkImageFlags_PitchLinear)
         .initialize(r8_image_layout);
 
-    uint32_t size = 0x1000 * 512;
+    uint32_t size = 4096 * 540;
     dk::UniqueMemBlock heap =
         dk::MemBlockMaker{device, size}
             .setFlags(DkMemBlockFlags_CpuUncached | DkMemBlockFlags_GpuCached |
@@ -117,7 +117,7 @@ TEST_CASE("Render linear R32 sample R8", "[texture_buffer]") {
         .setFlags(DkImageFlags_PitchLinear | DkImageFlags_UsageRender)
         .initialize(r8_image_layout);
 
-    uint32_t size = 0x1000 * 512;
+    uint32_t size = 4096 * 540;
     dk::UniqueMemBlock heap =
         dk::MemBlockMaker{device, size}
             .setFlags(DkMemBlockFlags_CpuUncached | DkMemBlockFlags_GpuCached |
