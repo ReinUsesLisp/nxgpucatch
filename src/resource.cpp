@@ -114,13 +114,23 @@ Image::Image(const dk::ImageLayoutMaker& layout_maker) {
     dk::ImageLayout image_layout;
     layout_maker.initialize(image_layout);
 
-    uint32_t size = static_cast<uint32_t>(image_layout.getSize());
-    size = size & -0x1000;
+    if (layout_maker.type == DkImageType_Buffer) {
+        uint32_t size = std::max(0x1000u, m_width * 32) & -0x1000;
+        size &= -0x1000;
+        m_heap = dk::MemBlockMaker{device, size}
+                     .setFlags(DkMemBlockFlags_CpuUncached | DkMemBlockFlags_GpuCached)
+                     .create();
+    } else {
+        uint32_t size = static_cast<uint32_t>(image_layout.getSize());
+        size = size & -0x1000;
 
-    m_heap = dk::MemBlockMaker{layout_maker.device, size}
-                 .setFlags(DkMemBlockFlags_CpuUncached | DkMemBlockFlags_GpuCached |
-                           DkMemBlockFlags_ZeroFillInit | DkMemBlockFlags_Image)
-                 .create();
+        m_heap =
+            dk::MemBlockMaker{layout_maker.device, size}
+                .setFlags(DkMemBlockFlags_CpuUncached | DkMemBlockFlags_GpuCached |
+                          DkMemBlockFlags_ZeroFillInit |
+                          (layout_maker.type == DkImageType_Buffer ? 0 : DkMemBlockFlags_Image))
+                .create();
+    }
     m_image.initialize(image_layout, m_heap, 0);
     m_image_view = dk::ImageView{m_image};
 }

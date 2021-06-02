@@ -49,19 +49,28 @@ class Texture {
 public:
     explicit Texture(uint32_t width, uint32_t height, uint32_t depth, uint32_t mips,
                      DkImageType type, bool is_depth = false, DkMsMode ms = DkMsMode_1x)
-        : m_image(dk::ImageLayoutMaker{device}
-                      .setDimensions(width, height, depth)
-                      .setType(type)
-                      .setFormat(is_depth ? DkImageFormat_ZF32 : DkImageFormat_RGBA8_Unorm)
-                      .setMipLevels(mips)
-                      .setMsMode(ms)
-                      .setFlags(DkImageFlags_BlockLinear)),
-          m_image_view{m_image.ImageHandle()}, m_width{width}, m_height{height}, m_depth{depth},
-          m_type{type} {
-        m_sampler.setFilter(DkFilter_Nearest, DkFilter_Nearest, DkMipFilter_Nearest);
+        : Texture(width, height, depth, mips, type,
+                  is_depth ? DkImageFormat_ZF32 : DkImageFormat_RGBA8_Unorm, ms) {
         if (is_depth) {
             m_sampler.setDepthCompare(true);
         }
+    }
+
+    explicit Texture(uint32_t width, uint32_t height, uint32_t depth, uint32_t mips,
+                     DkImageType type, DkImageFormat format, DkMsMode ms = DkMsMode_1x)
+        : m_image(dk::ImageLayoutMaker{device}
+                      .setDimensions(width, height, depth)
+                      .setType(type)
+                      .setFormat(format)
+                      .setMipLevels(mips)
+                      .setMsMode(ms)
+                      .setFlags(type == DkImageType_Buffer
+                                    ? 0
+                                    : (DkImageFlags_BlockLinear |
+                                       (type == DkImageType_2D ? DkImageFlags_Usage2DEngine : 0)))),
+          m_image_view{m_image.ImageHandle()}, m_width{width}, m_height{height}, m_depth{depth},
+          m_type{type} {
+        m_sampler.setFilter(DkFilter_Nearest, DkFilter_Nearest, DkMipFilter_Nearest);
     }
 
     const dk::ImageView& ImageView() const noexcept {
@@ -75,7 +84,8 @@ public:
     template <typename ColorType>
     requires(sizeof(ColorType) == sizeof(uint32_t)) //
         void FillColor(int mip, const ColorType& color) {
-        const bool reduce_height = m_type != DkImageType_1D && m_type != DkImageType_1DArray;
+        const bool reduce_height = m_type != DkImageType_1D && m_type != DkImageType_1DArray &&
+                                   m_type != DkImageType_Buffer;
         const bool reduce_depth = m_type == DkImageType_3D;
 
         uint8_t* data = static_cast<uint8_t*>(CpuAddr());
@@ -110,6 +120,14 @@ public:
 
     [[nodiscard]] size_t SizeBytes() const noexcept {
         return m_image.Heap().getSize();
+    }
+
+    [[nodiscard]] Image& GetImage() {
+        return m_image;
+    }
+
+    void Show() {
+        m_image.Show();
     }
 
 private:
