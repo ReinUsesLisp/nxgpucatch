@@ -12,6 +12,15 @@ public:
         cmdbuf.bindSamplerDescriptorSet(sampler_heap.GpuAddr(), 512);
     }
 
+    void PushImageView(dk::CmdBuf& cmdbuf, dk::ImageView image_view, size_t index) {
+        dk::ImageDescriptor image_descriptor;
+        image_descriptor.initialize(image_view);
+        
+        const size_t size = sizeof(image_descriptor);
+        const size_t offset = size * index;
+        cmdbuf.pushData(image_heap.GpuAddr() + offset, &image_descriptor, size);
+    }
+
     void PushTexture(dk::CmdBuf& cmdbuf, const Texture& texture, size_t index) {
         dk::ImageDescriptor image_descriptor;
         image_descriptor.initialize(texture.ImageView());
