@@ -15,7 +15,7 @@ static auto Run(std::string code) {
                                                               "S2R R3, SR_TID.X;\n"
                                                               "ISCADD R0.CC, R3, c[0x0][0x140], 2;"
                                                               "IADD.X R1, RZ, c[0x0][0x144];"
-                                                              "@!P1 MOV R2, 0xdead;"
+                                                              "SEL R2, R2, 0xdead, P1;"
                                                               "STG.E [R0], R2;"
                                                               "EXIT;");
 }
@@ -78,6 +78,14 @@ TEST_CASE("SHFL BFLY", "[shader]") {
                                 0xdead, 0xdead, 8,  9,  0xdead, 0xdead, 12, 13,
                                 0xdead, 0xdead, 16, 17, 0xdead, 0xdead, 20, 21,
                                 0xdead, 0xdead, 24, 25, 0xdead, 0xdead, 28, 29});
+}
+
+TEST_CASE("SHFL RZ", "[shader]") {
+    REQUIRE(Run<32>("SHFL.BFLY P1, RZ, R2, 5, 0x1f03;") ==
+            std::array{0xdead, 0xdead, 0xdead, 0xdead, 4,  5,  6,  7,
+                       0xdead, 0xdead, 0xdead, 0xdead, 12, 13, 14, 15,
+                       0xdead, 0xdead, 0xdead, 0xdead, 20, 21, 22, 23,
+                       0xdead, 0xdead, 0xdead, 0xdead, 28, 29, 30, 31});
 }
 
 TEST_CASE("SHFL Register", "[shader]") {
