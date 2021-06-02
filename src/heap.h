@@ -48,6 +48,10 @@ public:
         return *static_cast<T*>(CpuAddr());
     }
 
+    T* operator->() noexcept {
+        return static_cast<T*>(CpuAddr());
+    }
+
     template <typename Index>
     auto& operator[](const Index& index) {
         return (*static_cast<T*>(CpuAddr()))[index];
