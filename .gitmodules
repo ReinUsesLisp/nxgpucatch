@@ -7,3 +7,6 @@
 [submodule "externals/nxas"]
 	path = externals/nxas
 	url = https://github.com/ReinUsesLisp/nxas
+[submodule "externals/incbin"]
+	path = externals/incbin
+	url = https://github.com/graphitemaster/incbin

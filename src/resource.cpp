@@ -135,7 +135,7 @@ Image::Image(const dk::ImageLayoutMaker& layout_maker) {
     m_image_view = dk::ImageView{m_image};
 }
 
-void Image::Bind(dk::CmdBuf cmdbuf) {
+void Image::Bind(dk::CmdBuf cmdbuf) const {
     const DkImageView& view{*m_image_view};
     if (m_is_depth_stencil) {
         cmdbuf.bindRenderTargets({}, &view);

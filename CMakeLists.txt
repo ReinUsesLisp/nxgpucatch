@@ -1,13 +1,20 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(nxgpucatch)
+project(nxgpucatch C CXX ASM)
 set(CMAKE_C_STANDARD 20)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -frtti -fexceptions -DSA_ONSTACK=0")
 
 add_subdirectory(externals)
 
+include(cmake/CompileGLSL.cmake)
+
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 find_package(deko3d REQUIRED)
+
+add_shader_target(nxgpucatch_shaders
+    src/tests/draw/full_screen_triangle.vert
+    src/tests/draw/white.frag
+)
 
 add_executable(nxgpucatch
     src/alignment.h
@@ -27,10 +34,10 @@ add_executable(nxgpucatch
     src/shader.cpp
     src/shader.h
     src/tests/clear.cpp
+    src/tests/draw/simple_draw.cpp
     src/tests/indirect_compute.cpp
     src/tests/render_formats.cpp
     src/tests/render_linear_aliased.cpp
-    src/tests/texture_buffer.cpp
     src/tests/shader/atom.cpp
     src/tests/shader/atoms.cpp
     src/tests/shader/bfe.cpp
@@ -102,12 +109,15 @@ add_executable(nxgpucatch
     src/tests/shader/vote.cpp
     src/tests/shader/vsetp.cpp
     src/tests/shader/xmad.cpp
+    src/tests/texture_buffer.cpp
     src/wait_input.cpp
     src/wait_input.h
 )
 
 target_link_libraries(nxgpucatch switch::deko3d switch::libnx Catch2::Catch2 nxas_lib)
-target_include_directories(nxgpucatch PRIVATE src)
+target_include_directories(nxgpucatch PRIVATE src externals/incbin)
+add_dependencies(nxgpucatch nxgpucatch_shaders)
+
 target_compile_options(nxgpucatch PRIVATE
     -std=c++20
     -Wall

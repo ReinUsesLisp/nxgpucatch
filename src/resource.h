@@ -21,7 +21,7 @@ protected:
 class Image : public GpuResource {
 public:
     explicit Image(const dk::ImageLayoutMaker& layout_maker);
-    void Bind(dk::CmdBuf cmdbuf);
+    void Bind(dk::CmdBuf cmdbuf) const;
     void Show();
 
     template <typename T>
@@ -29,6 +29,14 @@ public:
 
     [[nodiscard]] const dk::Image& ImageHandle() const noexcept {
         return m_image;
+    }
+
+    [[nodiscard]] uint32_t Width() const noexcept {
+        return m_width;
+    }
+
+    [[nodiscard]] uint32_t Height() const noexcept {
+        return m_height;
     }
 
 protected:

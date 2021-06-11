@@ -27,3 +27,5 @@ CMakeSettings.json
 # Windows global filetypes
 Thumbs.db
 
+# Shader related filetypes
+*.dksh
