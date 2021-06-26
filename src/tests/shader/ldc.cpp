@@ -112,10 +112,6 @@ TEST_CASE("LDC Foldable unaligned", "[shader]") {
     REQUIRE(Run<uint32_t>("MOV R0, 0xffff; LDC.32 R0, c[2][R0];", mem) == 0xdddddddd);
 }
 
-TEST_CASE("LDC Robustness", "[shader]") {
-    
-}
-
 TEST_CASE("LDC IL", "[shader]") {
     using u32 = uint32_t;
     u32 data[4]{0xaa, 0xbb, 0xcc, 0xdd};
