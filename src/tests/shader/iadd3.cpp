@@ -79,4 +79,7 @@ TEST_CASE("IADD3 198X", "[shader]") {
     REQUIRE(FuzzRun("IADD3 R2, -R2, c[2][8], R4;") == std::array<uint32_t, 4>{
         0xeb52da41, 0xf55ca5f1, 0xdd5bc080, 0x6ea61ae8,
     });
+    REQUIRE(FuzzRun("IADD3 R2, -R2, 0xaee, R3;") == std::array<uint32_t, 4>{
+        0x34030e22, 0xaaefc588, 0xb49fdbac, 0xf98a2e4e,
+    });
 }
