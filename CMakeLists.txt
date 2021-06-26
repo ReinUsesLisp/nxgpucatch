@@ -34,6 +34,8 @@ add_executable(nxgpucatch
     src/shader.cpp
     src/shader.h
     src/tests/clear.cpp
+    src/tests/draw/shaders.cpp
+    src/tests/draw/shaders.h
     src/tests/draw/simple_draw.cpp
     src/tests/indirect_compute.cpp
     src/tests/render_formats.cpp
