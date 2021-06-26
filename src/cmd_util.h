@@ -40,6 +40,7 @@ inline void ResetState() {
         cmdbuf.bindRasterizerState(rasterizer_state);
         cmdbuf.bindColorState(color_state);
         cmdbuf.bindColorWriteState(color_write_state);
+        cmdbuf.bindVtxBufferState({});
     });
 }
 
@@ -55,5 +56,14 @@ inline void Draw(DkPrimitive primitive, uint32_t num_vertices, uint32_t num_inst
                  uint32_t first_vertex = 0, uint32_t first_instance = 0) {
     RecordRunWait([&](dk::CmdBuf cmdbuf) {
         cmdbuf.draw(primitive, num_vertices, num_instances, first_vertex, first_instance);
+    });
+}
+
+inline void DrawIndexed(DkPrimitive primitive, uint32_t index_count, uint32_t instance_count = 1,
+                        uint32_t first_index = 0, uint32_t vertex_offset = 0,
+                        uint32_t first_instance = 0) {
+    RecordRunWait([&](dk::CmdBuf cmdbuf) {
+        cmdbuf.drawIndexed(primitive, index_count, instance_count, first_index, vertex_offset,
+                           first_instance);
     });
 }
