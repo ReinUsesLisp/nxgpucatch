@@ -12,7 +12,9 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 find_package(deko3d REQUIRED)
 
 add_shader_target(nxgpucatch_shaders
+    src/tests/draw/full_screen_triangle_vanilla.vert
     src/tests/draw/full_screen_triangle.vert
+    src/tests/draw/varying_color.frag
     src/tests/draw/white.frag
 )
 
