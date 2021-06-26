@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cstring>
 
 #include <deko3d.hpp>
 
@@ -14,15 +15,15 @@ public:
                    .setFlags(flags | DkMemBlockFlags_ZeroFillInit)
                    .create()} {}
 
-    [[nodiscard]] DkGpuAddr GpuAddr() noexcept {
+    [[nodiscard]] DkGpuAddr GpuAddr() const noexcept {
         return heap.getGpuAddr();
     }
 
-    [[nodiscard]] void* CpuAddr() noexcept {
+    [[nodiscard]] void* CpuAddr() const noexcept {
         return heap.getCpuAddr();
     }
 
-    [[nodiscard]] uint32_t Size() noexcept {
+    [[nodiscard]] uint32_t Size() const noexcept {
         return heap.getSize();
     }
 
@@ -35,7 +36,7 @@ public:
     }
 
 private:
-    dk::UniqueMemBlock heap;
+    mutable dk::UniqueMemBlock heap;
 };
 
 template <typename T>
@@ -43,6 +44,10 @@ class TypedHeap : public Heap {
 public:
     explicit TypedHeap()
         : Heap{sizeof(T), DkMemBlockFlags_CpuUncached | DkMemBlockFlags_GpuCached} {}
+
+    TypedHeap(const T& data) : TypedHeap{} {
+        std::memcpy(CpuAddr(), &data, sizeof(data));
+    }
 
     T& operator*() noexcept {
         return *static_cast<T*>(CpuAddr());
