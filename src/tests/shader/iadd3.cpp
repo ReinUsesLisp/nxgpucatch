@@ -67,6 +67,12 @@ TEST_CASE("IADD3 CC", "[shader]") {
     REQUIRE(Run(0x8000, 2, 1, "IADD3.LS RZ.CC, R2, R3, R4; P2R R2, CC, RZ, 0xff;") == 2); // Sign
 }
 
+TEST_CASE("IADD3 33-bit", "[shader]") {
+    REQUIRE(Run(0xffff'ffff, 1, 0, "IADD3.RS R2, R2, R3, R4;") == 0x10000);
+    REQUIRE(Run(0xffff'ffff, 0, 0, "IADD3.RS R2, R2, R3, R4;") == 0x0ffff);
+    REQUIRE(Run(0xffff'ffff, 0xffff'ffff, 0, "IADD3.RS R2, R2, R3, R4;") == 0x1ffff);
+}
+
 TEST_CASE("IADD3 198X", "[shader]") {
     REQUIRE(FuzzRun("IADD3.LS R2, R2, R3, R4;") == std::array<uint32_t, 4>{
         0x45a8cafe, 0x35ae930a, 0x7f6c2040, 0x60ffe3e3,
@@ -86,8 +92,6 @@ TEST_CASE("IADD3 198X", "[shader]") {
 }
 
 TEST_CASE("IADD3 Age of Calamity", "[shader]") {
-    REQUIRE(static_cast<uint32_t>(Run(0x000400000, 0xa0000000, 0x80000000, "IADD3.RS R2, R4, R3, R2;")) == 0x412000);
-
     REQUIRE(FuzzRun("IADD3 R2, R3, 0x40, R4;") == std::array<uint32_t, 4>{
         0xa9ac8a2d, 0x25fece07, 0xe34e713e, 0x368fb461,
     });
