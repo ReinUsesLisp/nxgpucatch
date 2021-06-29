@@ -5,14 +5,15 @@
 static int32_t Run(uint32_t a, uint32_t b, uint32_t c, std::string code) {
     return int32_t(EvalUtil::Run(".dksh compute\n"
                                  "main:\n"
-                                 "MOV R0, c[0x0][0x140];\n"
-                                 "MOV R1, c[0x0][0x144];\n"
-                                 "MOV R2, c[2][0]\n;"
-                                 "MOV R3, c[2][4]\n;"
-                                 "MOV R4, c[2][8]\n;" +
+                                 "MOV R0, c[0x0][0x140];"
+                                 "MOV R1, c[0x0][0x144];"
+                                 "ISETP.F.AND P0, PT, RZ, RZ, PT;"
+                                 "MOV R2, c[2][0];"
+                                 "MOV R3, c[2][4];"
+                                 "MOV R4, c[2][8];" +
                                      code +
-                                     "STG.E [R0], R2;\n"
-                                     "EXIT;\n",
+                                     "STG.E [R0], R2;"
+                                     "EXIT;",
                                  std::array{a, b, c}));
 }
 
@@ -43,8 +44,8 @@ TEST_CASE("IADD3 Simple", "[shader]") {
     REQUIRE(Run(0x0040009, 0x00020003, 0x00010008, "IADD3 R2, R2.H1, R3.H0, R4;") == 0x1000f);
     REQUIRE(Run(0x0040009, 0x00020003, 0x00010008, "IADD3 R2, R2, R3, -R4.H1;") == 0x6000b);
 
-    REQUIRE(Run(0x40000, 0x50000, 6, "IADD3.LS R2, R2, R3, R4;") == 15);
-    REQUIRE(Run(4, 5, 6, "IADD3.RS R2, R2, R3, R4;") == 0x90006);
+    REQUIRE(Run(0x40000, 0x50000, 6, "IADD3.RS R2, R2, R3, R4;") == 15);
+    REQUIRE(Run(4, 5, 6, "IADD3.LS R2, R2, R3, R4;") == 0x90006);
 
     REQUIRE(Run(4, 5, 6, "IADD3 R2, R2, c[2][4], R4;") == 15);
     REQUIRE(Run(4, 5, 6, "IADD3 R2, R2, 5, R4;") == 15);
@@ -62,12 +63,12 @@ TEST_CASE("IADD3 CC", "[shader]") {
     REQUIRE(Run(0, 2, -1, "IADD3 RZ.CC, R2, R3, R4; P2R R2, CC, RZ, 0xff;") == 4); // Carry
 
     // Shifts
-    REQUIRE(Run(2, 2, 0, "IADD3.LS RZ.CC, R2, R3, R4; P2R R2, CC, RZ, 0xff;") == 1); // Zero
-    REQUIRE(Run(0x8000, 2, 1, "IADD3.RS RZ.CC, R2, R3, R4; P2R R2, CC, RZ, 0xff;") == 2); // Sign
+    REQUIRE(Run(2, 2, 0, "IADD3.RS RZ.CC, R2, R3, R4; P2R R2, CC, RZ, 0xff;") == 1); // Zero
+    REQUIRE(Run(0x8000, 2, 1, "IADD3.LS RZ.CC, R2, R3, R4; P2R R2, CC, RZ, 0xff;") == 2); // Sign
 }
 
 TEST_CASE("IADD3 198X", "[shader]") {
-    REQUIRE(FuzzRun("IADD3.RS R2, R2, R3, R4;") == std::array<uint32_t, 4>{
+    REQUIRE(FuzzRun("IADD3.LS R2, R2, R3, R4;") == std::array<uint32_t, 4>{
         0x45a8cafe, 0x35ae930a, 0x7f6c2040, 0x60ffe3e3,
     });
     REQUIRE(FuzzRun("IADD3 R2, -R2, c[2][0], R4;") == std::array<uint32_t, 4>{
@@ -81,5 +82,28 @@ TEST_CASE("IADD3 198X", "[shader]") {
     });
     REQUIRE(FuzzRun("IADD3 R2, -R2, 0xaee, R3;") == std::array<uint32_t, 4>{
         0x34030e22, 0xaaefc588, 0xb49fdbac, 0xf98a2e4e,
+    });
+}
+
+TEST_CASE("IADD3 Age of Calamity", "[shader]") {
+    REQUIRE(static_cast<uint32_t>(Run(0x000400000, 0xa0000000, 0x80000000, "IADD3.RS R2, R4, R3, R2;")) == 0x412000);
+
+    REQUIRE(FuzzRun("IADD3 R2, R3, 0x40, R4;") == std::array<uint32_t, 4>{
+        0xa9ac8a2d, 0x25fece07, 0xe34e713e, 0x368fb461,
+    });
+    REQUIRE(FuzzRun("IADD3.LS R2, R4, R3, R2;") == std::array<uint32_t, 4>{
+        0x3497bbbb, 0xce078023, 0xf0fe8000, 0x0d42acde,
+    });
+    REQUIRE(FuzzRun("IADD3.RS R2, R4, R3, R2;") == std::array<uint32_t, 4>{
+        0xaaac6567, 0x41a621, 0x8001634e, 0x5922e36d,
+    });
+    REQUIRE(FuzzRun("IADD3 R2, R3, c[2][0], R4;") == std::array<uint32_t, 4>{
+        0x545745a8, 0x263f4dea, 0x634ef0fe, 0x8fb160ff,
+    });
+    REQUIRE(FuzzRun("@!P0 IADD3 R2, R4, 0xfff82, -R3;") == std::array<uint32_t, 4>{
+        0xec510b91, 0xcf9e57cf, 0x7a0dcf04, 0x91381327,
+    });
+    REQUIRE(FuzzRun("@P0 IADD3 R2, R4, 0xfff82, -R3;") == std::array<uint32_t, 4>{
+        0xaaaabbbb, 0x408023, 0x80008000, 0x5921acde,
     });
 }
