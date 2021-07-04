@@ -1,12 +1,6 @@
-[submodule "externals/switch-cmake"]
-	path = externals/switch-cmake
-	url = https://github.com/vbe0201/switch-cmake
 [submodule "externals/Catch2"]
 	path = externals/Catch2
 	url = https://github.com/catchorg/Catch2
 [submodule "externals/nxas"]
 	path = externals/nxas
 	url = https://github.com/ReinUsesLisp/nxas
-[submodule "externals/incbin"]
-	path = externals/incbin
-	url = https://github.com/graphitemaster/incbin

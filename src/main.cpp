@@ -1,4 +1,5 @@
 #define CATCH_CONFIG_RUNNER
+
 #include <catch2/catch_all.hpp>
 
 #include <iostream>
@@ -15,15 +16,28 @@ int main(int argc, char** argv) {
         argv = &dummy_argv0_ptr;
     }
 
+    const Result rc = romfsInit();
+    if (R_FAILED(rc)) {
+        printf("romfsInit: %08X\n", rc);
+        return EXIT_FAILURE;
+    }
+
     InitializeDevice();
-    std::streambuf* oldCoutStreamBuf = std::cout.rdbuf();
-    std::ostringstream strCout;
-    std::cout.rdbuf( strCout.rdbuf() );
+
+    std::streambuf* old_count_stream = std::cout.rdbuf();
+    std::ostringstream str_cout;
+    std::cout.rdbuf(str_cout.rdbuf());
+
     const int result{Catch::Session().run(argc, argv)};
-    std::string output = strCout.str();
+
+    std::string output = str_cout.str();
     fsOutputAccessLogToSdCard(output.c_str(), output.size());
-    std::cout.rdbuf( oldCoutStreamBuf );
+
+    std::cout.rdbuf(old_count_stream);
     std::cout << output;
+
+    romfsExit();
+
     WaitForUserInput();
     return result;
 }

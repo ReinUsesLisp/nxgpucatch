@@ -2,16 +2,14 @@
 
 #include <deko3d.hpp>
 
-#include <incbin.h>
-
 #include "cmd_util.h"
 #include "resource.h"
 #include "shaders.h"
 
 TEST_CASE("Simple", "[draw]") {
     RenderTarget2D render_target{DkImageFormat_RGBA8_Unorm, 64, 64};
-    Shader vert_shader(Shaders::FullScreenTriangleDksh);
-    Shader frag_shader(Shaders::WhiteDksh);
+    auto vert_shader = LoadShader("full_screen_triangle_vert");
+    auto frag_shader = LoadShader("white_frag");
 
     ResetState();
     SetRenderTarget(render_target);

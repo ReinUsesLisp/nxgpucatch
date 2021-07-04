@@ -1,22 +1,12 @@
 cmake_minimum_required(VERSION 3.16)
 
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+
 project(nxgpucatch C CXX ASM)
 set(CMAKE_C_STANDARD 20)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -frtti -fexceptions -DSA_ONSTACK=0")
 
 add_subdirectory(externals)
-
-include(cmake/CompileGLSL.cmake)
-
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
-find_package(deko3d REQUIRED)
-
-add_shader_target(nxgpucatch_shaders
-    src/tests/draw/full_screen_triangle_vanilla.vert
-    src/tests/draw/full_screen_triangle.vert
-    src/tests/draw/varying_color.frag
-    src/tests/draw/white.frag
-)
 
 add_executable(nxgpucatch
     src/alignment.h
@@ -119,9 +109,24 @@ add_executable(nxgpucatch
     src/wait_input.h
 )
 
-target_link_libraries(nxgpucatch switch::deko3d switch::libnx Catch2::Catch2 nxas_lib)
+nx_add_shader_program(full_screen_triangle_vanilla_vert src/tests/draw/full_screen_triangle_vanilla.vert vert)
+nx_add_shader_program(full_screen_triangle_vert src/tests/draw/full_screen_triangle.vert vert)
+nx_add_shader_program(varying_color_frag src/tests/draw/varying_color.frag frag)
+nx_add_shader_program(white_frag src/tests/draw/white.frag frag)
+
+dkp_add_asset_target(nxgpucatch_romfs romfs)
+
+dkp_install_assets(nxgpucatch_romfs
+    DESTINATION shaders
+    TARGETS
+        full_screen_triangle_vanilla_vert
+        full_screen_triangle_vert
+        varying_color_frag
+        white_frag
+)
+
+target_link_libraries(nxgpucatch Catch2::Catch2 nxas_lib deko3d)
 target_include_directories(nxgpucatch PRIVATE src externals/incbin)
-add_dependencies(nxgpucatch nxgpucatch_shaders)
 
 target_compile_options(nxgpucatch PRIVATE
     -std=c++20
@@ -145,16 +150,15 @@ target_precompile_headers(nxgpucatch PRIVATE
     <stdexcept>
 )
 
-set_target_properties(nxgpucatch PROPERTIES
-    APP_TITLE "nxgpucatch"
-    APP_AUTHOR "yuzu Team"
-    APP_VERSION "0.1.0"
+nx_generate_nacp(nxgpucatch.nacp
+    NAME "nxgpucatch"
+    AUTHOR "yuzu Team"
 )
 
-# Do not generate a .nacp file
-set(NO_ICON TRUE)
-set(NO_NACP TRUE)
-add_nro_target(nxgpucatch)
+nx_create_nro(nxgpucatch
+    NACP nxgpucatch.nacp
+    ROMFS nxgpucatch_romfs
+)
 
 find_program(nxlink_exe nxlink PATHS ${DEVKITPRO}/tools/bin REQUIRED)
 add_custom_target(nxlink

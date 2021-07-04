@@ -8,8 +8,8 @@
 
 TEST_CASE("Varying unwritten", "[draw][varying_undefined]") {
     RenderTarget2D render_target{DkImageFormat_RGBA8_Unorm, 64, 64};
-    Shader vert_shader(Shaders::FullScreenTriangleVanillaDksh);
-    Shader frag_shader(Shaders::VaryingColorDksh);
+    auto vert_shader = LoadShader("full_screen_triangle_vanilla_vert");
+    auto frag_shader = LoadShader("varying_color_frag");
 
     ResetState();
     SetRenderTarget(render_target);
@@ -21,8 +21,8 @@ TEST_CASE("Varying unwritten", "[draw][varying_undefined]") {
 
 TEST_CASE("Varying disabled attribute", "[draw][varying_undefined]") {
     RenderTarget2D render_target{DkImageFormat_RGBA8_Unorm, 64, 64};
-    Shader vert_shader(Shaders::FullScreenTriangleDksh);
-    Shader frag_shader(Shaders::VaryingColorDksh);
+    auto vert_shader = LoadShader("full_screen_triangle_vert");
+    auto frag_shader = LoadShader("varying_color_frag");
 
     ResetState();
     SetRenderTarget(render_target);
