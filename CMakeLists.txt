@@ -25,6 +25,7 @@ add_executable(nxgpucatch
     src/resource.h
     src/shader.cpp
     src/shader.h
+    src/tests/buffer.cpp
     src/tests/clear.cpp
     src/tests/draw/simple_draw.cpp
     src/tests/draw/varying_undefined.cpp
@@ -111,6 +112,7 @@ nx_add_shader_program(full_screen_triangle_vanilla_vert src/tests/draw/full_scre
 nx_add_shader_program(full_screen_triangle_vert src/tests/draw/full_screen_triangle.vert vert)
 nx_add_shader_program(varying_color_frag src/tests/draw/varying_color.frag frag)
 nx_add_shader_program(white_frag src/tests/draw/white.frag frag)
+nx_add_shader_program(write_uniform_vert src/tests/write_uniform.vert vert)
 
 dkp_add_asset_target(nxgpucatch_romfs romfs)
 
@@ -121,6 +123,7 @@ dkp_install_assets(nxgpucatch_romfs
         full_screen_triangle_vert
         varying_color_frag
         white_frag
+        write_uniform_vert
 )
 
 target_link_libraries(nxgpucatch Catch2::Catch2 nxas_lib deko3d)

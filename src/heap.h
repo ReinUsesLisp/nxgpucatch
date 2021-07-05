@@ -15,6 +15,10 @@ public:
                    .setFlags(flags | DkMemBlockFlags_ZeroFillInit)
                    .create()} {}
 
+    [[nodiscard]] DkMemBlock MemBlock() const noexcept {
+        return heap;
+    }
+
     [[nodiscard]] DkGpuAddr GpuAddr() const noexcept {
         return heap.getGpuAddr();
     }

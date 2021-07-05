@@ -41,6 +41,7 @@ inline void ResetState() {
         cmdbuf.bindColorState(color_state);
         cmdbuf.bindColorWriteState(color_write_state);
         cmdbuf.bindVtxBufferState({});
+        cmdbuf.bindRenderTargets({});
     });
 }
 
