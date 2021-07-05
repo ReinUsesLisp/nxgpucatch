@@ -4,7 +4,7 @@
 
 #include "cmd_util.h"
 #include "resource.h"
-#include "shaders.h"
+#include "shader.h"
 
 TEST_CASE("Varying unwritten", "[draw][varying_undefined]") {
     RenderTarget2D render_target{DkImageFormat_RGBA8_Unorm, 64, 64};

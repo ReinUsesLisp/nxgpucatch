@@ -23,3 +23,5 @@ private:
     dk::UniqueMemBlock heap;
     dk::Shader shader;
 };
+
+[[nodiscard]] Shader LoadShader(const char* name);
