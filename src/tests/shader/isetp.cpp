@@ -81,3 +81,38 @@ TEST_CASE("ISETP Negatives", "[shader]") {
         ISETP.GE.U32.AND P6, PT, R2, c[2][0], PT;
     )") == 0b1101110);
 }
+
+TEST_CASE("ISETP Extended", "[shader]") {
+    REQUIRE(Run(17, R"(
+        MOV R2, 17;
+        MOV R3, 34;
+        ISETP.F.X.AND  P0, PT, RZ, c[2][0], PT;
+        ISETP.LT.X.AND P1, PT, RZ, c[2][0], PT;
+        ISETP.EQ.X.AND P2, PT, R2, c[2][0], PT;
+        ISETP.LE.X.AND P3, PT, R2, c[2][0], PT;
+        ISETP.GT.X.AND P4, PT, R3, c[2][0], PT;
+        ISETP.NE.X.AND P5, PT, R3, c[2][0], PT;
+        ISETP.GE.X.AND P6, PT, R2, c[2][0], PT;
+    )") == 0x3a);
+    REQUIRE(Run(-17, R"(
+        MOV R2, -17;
+        MOV R3, 34;
+        ISETP.F.U32.X.AND  P0, PT, RZ, c[2][0], PT;
+        ISETP.LT.U32.X.AND P1, PT, RZ, c[2][0], PT;
+        ISETP.EQ.U32.X.AND P2, PT, R2, c[2][0], PT;
+        ISETP.LE.U32.X.AND P3, PT, R2, c[2][0], PT;
+        ISETP.GT.U32.X.AND P4, PT, R3, c[2][0], PT;
+        ISETP.NE.U32.X.AND P5, PT, R3, c[2][0], PT;
+        ISETP.GE.U32.X.AND P6, PT, R2, c[2][0], PT;
+    )") == 0x2a);
+    REQUIRE(Run(0, "ISETP.T.AND P0, PT, RZ, c[2][0], PT;\n") == 1);
+    REQUIRE(Run(0, R"(
+        MOV R2, 7;
+        MOV R3, 5;
+        ISETP.GT.X.AND P0, PT, R2, R3, PT;
+    )") == 1);
+    REQUIRE(Run(0, R"(
+        MOV R2, 7;
+        ISETP.GT.X.AND P0, PT, R2, 5, PT;
+    )") == 1);
+}
