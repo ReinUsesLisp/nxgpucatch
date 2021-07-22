@@ -21,6 +21,12 @@ main:
     )");
 }
 
+static void SubmitAndWait(DkCmdList cmdlist) {
+    queue.submitCommands(cmdlist);
+    queue.flush();
+    queue.waitIdle();
+}
+
 TEST_CASE("Depth range", "[draw]") {
     DescriptorSet descriptor_set;
     Texture depth_image(64, 64, 1, 1, DkImageType_2D, DkImageFormat_ZF32_X24S8);
@@ -36,12 +42,6 @@ TEST_CASE("Depth range", "[draw]") {
     dk::UniqueCmdBuf cmdbuf{dk::CmdBufMaker{device}.create()};
     dk::UniqueMemBlock heap{dk::MemBlockMaker{device, 64 * 1024}.create()};
     cmdbuf.addMemory(heap, 0, 64 * 1024);
-
-    cmdbuf.setViewports(0, {{0.0f, 0.0f, 64.0f, 64.0f, 0.0f, 1.0f}});
-    auto zero_to_one_depth_range_cmdlist = cmdbuf.finishList();
-
-    cmdbuf.setViewports(0, {{0.0f, 0.0f, 64.0f, 64.0f, -1.0f, 1.0f}});
-    auto minus_one_to_one_depth_range_cmdlist = cmdbuf.finishList();
 
     vert_shader.Bind(cmdbuf, DkStageFlag_GraphicsMask);
     frag_shader.Bind(cmdbuf, DkStageFlag_GraphicsMask);
@@ -74,26 +74,40 @@ TEST_CASE("Depth range", "[draw]") {
             std::pair{1.0f, 1.0f},      std::pair{0.5f, 0.75f}, std::pair{0.25f, 0.625f},
             std::pair{0.125f, 0.5625f}, std::pair{-1.0f, 0.0f},
         };
-        queue.submitCommands(zero_to_one_depth_range_cmdlist);
+        cmdbuf.setViewports(0, {{0.0f, 0.0f, 64.0f, 64.0f, 0.0f, 1.0f}});
+        queue.submitCommands(cmdbuf.finishList());
+
         for (auto [input, output] : ranges) {
             *uniform = input;
-            queue.submitCommands(cmdlist);
-            queue.flush();
-            queue.waitIdle();
+            SubmitAndWait(cmdlist);
             REQUIRE(*result == output);
         }
     }
     SECTION("Negative one to one") {
         static constexpr std::array ranges{
-            std::pair{1.0f, 1.0f},      std::pair{0.5f, 0.5f}, std::pair{0.25f, 0.25f},
+            std::pair{1.0f, 1.0f},     std::pair{0.5f, 0.5f},  std::pair{0.25f, 0.25f},
             std::pair{0.125f, 0.125f}, std::pair{-1.0f, 0.0f},
         };
-        queue.submitCommands(minus_one_to_one_depth_range_cmdlist);
+        cmdbuf.setViewports(0, {{0.0f, 0.0f, 64.0f, 64.0f, -1.0f, 1.0f}});
+        queue.submitCommands(cmdbuf.finishList());
+
         for (auto [input, output] : ranges) {
             *uniform = input;
-            queue.submitCommands(cmdlist);
-            queue.flush();
-            queue.waitIdle();
+            SubmitAndWait(cmdlist);
+            REQUIRE(*result == output);
+        }
+    }
+    SECTION("One to zero") {
+        static constexpr std::array ranges{
+            std::pair{1.0f, 0.0f},      std::pair{0.5f, 0.25f}, std::pair{0.25f, 0.375f},
+            std::pair{0.125f, 0.4375f}, std::pair{-1.0f, 1.0f},
+        };
+        cmdbuf.setViewports(0, {{0.0f, 0.0f, 64.0f, 64.0f, 1.0f, 0.0f}});
+        queue.submitCommands(cmdbuf.finishList());
+
+        for (auto [input, output] : ranges) {
+            *uniform = input;
+            SubmitAndWait(cmdlist);
             REQUIRE(*result == output);
         }
     }
