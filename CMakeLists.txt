@@ -27,6 +27,7 @@ add_executable(nxgpucatch
     src/shader.h
     src/tests/buffer.cpp
     src/tests/clear.cpp
+    src/tests/draw/depth_range.cpp
     src/tests/draw/frag_coord.cpp
     src/tests/draw/simple_draw.cpp
     src/tests/draw/varying_undefined.cpp
@@ -111,6 +112,7 @@ add_executable(nxgpucatch
 
 nx_add_shader_program(flat_frag_coord_32_frag src/tests/draw/flat_frag_coord_32.frag frag)
 nx_add_shader_program(full_screen_triangle_vanilla_vert src/tests/draw/full_screen_triangle_vanilla.vert vert)
+nx_add_shader_program(full_screen_triangle_depth_vert src/tests/draw/full_screen_triangle_depth.vert vert)
 nx_add_shader_program(full_screen_triangle_vert src/tests/draw/full_screen_triangle.vert vert)
 nx_add_shader_program(varying_color_frag src/tests/draw/varying_color.frag frag)
 nx_add_shader_program(white_frag src/tests/draw/white.frag frag)
@@ -123,6 +125,7 @@ dkp_install_assets(nxgpucatch_romfs
     TARGETS
         flat_frag_coord_32_frag
         full_screen_triangle_vanilla_vert
+        full_screen_triangle_depth_vert
         full_screen_triangle_vert
         varying_color_frag
         white_frag
