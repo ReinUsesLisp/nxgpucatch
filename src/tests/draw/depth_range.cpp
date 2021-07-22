@@ -69,7 +69,7 @@ TEST_CASE("Depth range", "[draw]") {
 
     auto cmdlist = cmdbuf.finishList();
 
-    SECTION("Simple") {
+    SECTION("[0,1]") {
         static constexpr std::array ranges{
             std::pair{1.0f, 1.0f},      std::pair{0.5f, 0.75f}, std::pair{0.25f, 0.625f},
             std::pair{0.125f, 0.5625f}, std::pair{-1.0f, 0.0f},
@@ -83,7 +83,7 @@ TEST_CASE("Depth range", "[draw]") {
             REQUIRE(*result == output);
         }
     }
-    SECTION("Negative one to one") {
+    SECTION("[-1,1]") {
         static constexpr std::array ranges{
             std::pair{1.0f, 1.0f},     std::pair{0.5f, 0.5f},  std::pair{0.25f, 0.25f},
             std::pair{0.125f, 0.125f}, std::pair{-1.0f, 0.0f},
@@ -97,12 +97,28 @@ TEST_CASE("Depth range", "[draw]") {
             REQUIRE(*result == output);
         }
     }
-    SECTION("One to zero") {
+    SECTION("[1,0]") {
         static constexpr std::array ranges{
             std::pair{1.0f, 0.0f},      std::pair{0.5f, 0.25f}, std::pair{0.25f, 0.375f},
             std::pair{0.125f, 0.4375f}, std::pair{-1.0f, 1.0f},
         };
         cmdbuf.setViewports(0, {{0.0f, 0.0f, 64.0f, 64.0f, 1.0f, 0.0f}});
+        queue.submitCommands(cmdbuf.finishList());
+
+        for (auto [input, output] : ranges) {
+            *uniform = input;
+            SubmitAndWait(cmdlist);
+            REQUIRE(*result == output);
+        }
+    }
+    SECTION("[1,-1]") {
+        static constexpr std::array ranges{
+            std::pair{1.0f, 0.0f},
+            std::pair{0.5f, 0.0f},
+            std::pair{-0.5f, 0.5f},
+            std::pair{-1.0f, 1.0f},
+        };
+        cmdbuf.setViewports(0, {{0.0f, 0.0f, 64.0f, 64.0f, 1.0f, -1.0f}});
         queue.submitCommands(cmdbuf.finishList());
 
         for (auto [input, output] : ranges) {
