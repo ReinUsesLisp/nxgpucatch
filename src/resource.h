@@ -31,6 +31,10 @@ public:
         return m_image;
     }
 
+    [[nodiscard]] const DkImageView& ImageView() const noexcept {
+        return m_image_view.value();
+    }
+
     [[nodiscard]] uint32_t Width() const noexcept {
         return m_width;
     }
